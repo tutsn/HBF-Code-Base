@@ -47,6 +47,7 @@ const char passphrase[] = "ENTER_PASSPHRASE_HERE";
 #include "ESPixelStick.h"
 #include "EFUpdate.h"
 #include "wshandler.h"
+#include "stairs_matrix.h"
 
 extern "C" {
 #include <user_interface.h>
@@ -147,6 +148,7 @@ void setup() {
 #else
     updateConfig();
 #endif
+
 }
 
 int initWifi() {
