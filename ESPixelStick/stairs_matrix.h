@@ -1,16 +1,16 @@
 #include <FastLED.h>
 #include "stairs_matrix_palettes.h"
 
-#define LED_PIN     10
+#define LOG_PORT        Serial  /* Serial port for console logging */
+
+#define LED_PIN     5
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
-#define SECONDS_PER_PALETTE 10
 
 int ledMode = 1;                  // this is the starting palette
 const uint8_t kMatrixWidth  = 50;
 const uint8_t kMatrixHeight = 6;
 const bool    kMatrixSerpentineLayout = true;
-int BRIGHTNESS =           255;   // this is half brightness 
 
 #define NUM_LEDS (kMatrixWidth * kMatrixHeight)
 #define MAX_DIMENSION ((kMatrixWidth>kMatrixHeight) ? kMatrixWidth : kMatrixHeight)
@@ -73,26 +73,19 @@ void stairs_matrix_setup() {
   z = random16();
 
   LEDS.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds,NUM_LEDS);
-  FastLED.setBrightness(BRIGHTNESS);
-
-  // set D3 to OUTPUT LOW to open the LLS
-  pinMode(D3, OUTPUT);
-  digitalWrite(D3, LOW);
 }
 
 
-void stairs_matrix() {
+void stairs_matrix(uint16_t SecondsPerPalette) {
 
-  // Periodically choose a new palette, speed, and scale
+  // Periodically choose a new palette
   
-  EVERY_N_SECONDS( SECONDS_PER_PALETTE ) {
+  EVERY_N_SECONDS( SecondsPerPalette ) {
     gCurrentPaletteNumber = addmod8( gCurrentPaletteNumber, 1, gGradientPaletteCount);
     targetPalette = gGradientPalettes[ gCurrentPaletteNumber ];
+    LOG_PORT.println(gCurrentPaletteNumber);
   }
-
-  EVERY_N_MILLISECONDS(40) {
-    nblendPaletteTowardPalette( currentPalette, targetPalette, 16);
-  }  
+    nblendPaletteTowardPalette( currentPalette, targetPalette, 10);
 
   // generate noise data
   fillnoise8();
@@ -108,7 +101,7 @@ void fillnoise8() {
  
   uint8_t dataSmoothing = 0;
   if( speed < 50) {
-    dataSmoothing = 200 - (speed * 4);
+    dataSmoothing = 240 - (speed * 4);
   }
   
   for(int i = 0; i < MAX_DIMENSION; i++) {

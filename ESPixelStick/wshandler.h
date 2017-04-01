@@ -219,6 +219,9 @@ void procT(uint8_t *data, AsyncWebSocketClient *client) {
 #endif
             break;
         }
+        case '5': // NOISEMATRIX
+            config.testmode = TestMode::NOISEMATRIX;
+            LOG_PORT.println("TESTMODE NOISEMATRIX");
     }
 }
 

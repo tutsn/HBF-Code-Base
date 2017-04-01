@@ -26,6 +26,9 @@
 #include "SerialDriver.h"
 #endif
 
+// include additional testing animations for fallback/backup purposes
+#include "stairs_matrix.h"
+
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
 
@@ -60,6 +63,9 @@ enum class DevMode : uint8_t {
 /* Test Modes */
 enum class TestMode : uint8_t {
     DISABLED,
+    NOISEMATRIX,
+    FIRE,
+    SPARKLE,
     STATIC,
     CHASE,
     RAINBOW,
@@ -94,6 +100,13 @@ typedef struct {
     uint16_t    channel_start;  /* Channel to start listening at - 1 based */
     uint16_t    channel_count;  /* Number of channels */
     bool        multicast;      /* Enable multicast listener */
+
+    /* NOISEMATRIX */
+    uint16_t    sizex; 
+    uint16_t    sizey;
+    uint16_t    fps;
+    uint16_t    spp;
+     
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixels */

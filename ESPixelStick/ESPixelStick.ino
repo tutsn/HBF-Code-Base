@@ -47,7 +47,7 @@ const char passphrase[] = "ENTER_PASSPHRASE_HERE";
 #include "ESPixelStick.h"
 #include "EFUpdate.h"
 #include "wshandler.h"
-#include "stairs_matrix.h"
+
 
 extern "C" {
 #include <user_interface.h>
@@ -148,7 +148,11 @@ void setup() {
 #else
     updateConfig();
 #endif
+    stairs_matrix_setup();
 
+    // set D3 to OUTPUT LOW to open the LLS and show status led 
+    pinMode(D3, OUTPUT);
+    digitalWrite(D3, LOW);
 }
 
 int initWifi() {
@@ -199,6 +203,8 @@ int initWifi() {
     }
 
     return WiFi.status();
+
+
 }
 
 /* Configure and start the web server */
@@ -365,6 +371,12 @@ void dsDeviceConfig(JsonObject &json) {
     config.channel_count = json["e131"]["channel_count"];
     config.multicast = json["e131"]["multicast"];
 
+    /* NOISEMATRIX */
+    config.sizex = json["noisematrix"]["sizex"];
+    config.sizey = json["noisematrix"]["sizey"];
+    config.fps = json["noisematrix"]["fps"];
+    config.spp = json["noisematrix"]["spp"];
+
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
     config.pixel_type = PixelType(static_cast<uint8_t>(json["pixel"]["type"]));
@@ -466,6 +478,13 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     serial["baudrate"] = static_cast<uint32_t>(config.baudrate);
 #endif
 
+    /* NOISEMATRIX */
+    JsonObject &noisematrix = json.createNestedObject("noisematrix");
+    noisematrix["sizex"] = config.sizex;
+    noisematrix["sizey"] = config.sizey;
+    noisematrix["fps"] = config.fps;
+    noisematrix["spp"] = config.spp;
+
     if (pretty)
         json.prettyPrintTo(jsonString);
     else
@@ -550,6 +569,46 @@ void loop() {
       e131.parsePacket();
     
       switch(config.testmode){
+
+        case TestMode::NOISEMATRIX:
+          //run noise matrix
+          
+          if(millis() - testing.last > (1000 / config.fps)){
+            //time for new step
+            testing.last = millis();
+
+          // call customized FastLed-routine and build a single frame
+          stairs_matrix(config.spp);
+          
+        #if defined(ESPS_MODE_PIXEL)    
+            // now copy the FastLed frame to PixelDriver
+            // NUM_LEDS comes from FastLed-routine btw.
+
+            // ++ check if NUM_LEDS exceeds Pixel count ! 
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, leds[i].r);
+              pixels.setValue(ch_offset++, leds[i].g);
+              pixels.setValue(ch_offset, leds[i].b);
+            }
+        
+        #elif defined(ESPS_MODE_SERIAL)
+            
+            // ++ check if NUM_LEDS exceeds Pixel count !
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              LOG_PORT.print(leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].b);
+              LOG_PORT.println(" - ");
+            }
+        #endif 
+          }
+        break;
+       
         case TestMode::STATIC: {
           
           //continue to update color to whole string
@@ -565,15 +624,17 @@ void loop() {
             serial.setValue(i++, testing.b);
   #endif
               }
+         }
          break;
-        }
        
+        
         case TestMode::CHASE:
           //run chase routine
           
           if(millis() - testing.last > 100){
             //time for new step
             testing.last = millis();
+            
   #if defined(ESPS_MODE_PIXEL)
             //clear whole string
             for(int y =0; y < config.channel_count; y++) pixels.setValue(y, 0);
@@ -594,6 +655,8 @@ void loop() {
           }
        
         break;
+        
+        
         case TestMode::RAINBOW:
           //run rainbow routine
           if(millis() - testing.last > 50){
