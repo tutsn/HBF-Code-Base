@@ -685,22 +685,26 @@ void loop() {
         
         
         case TestMode::RAINBOW:
-          double R = double(0.0196);
-          double G = double(0.490196);
-          double B = double(0.490196);
           //run rainbow routine
           if(millis() - testing.last > 10){
-            Wire.requestFrom(8,1);    // request 6 bytes from slave device #8
+            double R = double(0.0196);
+            double G = double(0.490196);
+            double B = double(0.490196);
+            int maxTime = 5000;
+            int maxDist = 80;
+            int cooldownTime = 5000;
+            float dissapationRate = 0.1;
+            float oscillationRate = 1;
             int dist = 0;
+            testing.last = millis();
+
+            Wire.requestFrom(8,1);    // request 6 bytes from slave device #8
             while (Wire.available()) { // slave may send less than requested
               dist = Wire.read(); // receive a byte as character
-              // LOG_PORT.println(R);         // print the character
+              LOG_PORT.println(dist);         // print the character
             }
             
-            testing.last = millis();
-            int maxTime = 5000;
-
-            if ((dist > 0) && (dist < 80) && (millis() - footStepTime > maxTime + 5000)){
+            if ((dist > 0) && (dist < maxDist) && (millis() - footStepTime > maxTime + cooldownTime)){
                 footStepTime = millis();
                 testing.step = dist;
                 LOG_PORT.println(dist);
@@ -713,25 +717,20 @@ void loop() {
                   
                 for(int y =0; y < (config.channel_count/3); y++) {
                     int ch_offset = y * 3;
-                    double x = (0.1 * t * double(y - p));
+                    double x = (dissapationRate * t * double(y - p));
                     if (x == 0) x += 0.1;
-                    double gain = 255 * (sin(2 * M_PI * t) * (sin(x) / x) + 1) / 2.0;
+                    double gain = 255 * (sin(2 * M_PI * oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
         
                     pixels.setValue(ch_offset++, gain * R);
                     pixels.setValue(ch_offset++, gain* G);
                     pixels.setValue(ch_offset, gain * B);                    
-  
-                    //LOG_PORT.println(gain * R); 
-                    //LOG_PORT.print(" "); 
                 }
-  
-                LOG_PORT.println(""); 
             }
             else {
                 for (int i = 0 ; i < (config.channel_count/3) ; i++)
                 {
                   int ch_offset = i*3;
-                  double gain = 255 * (sin(2 * M_PI * (millis() / 1000.0)) * sin(i) + 1) / 2.0;
+                  double gain = 255 * (sin(2 * M_PI * oscillationRate* (millis() / 1000.0)) * sin(i) + 1) / 2.0;
                   pixels.setValue(ch_offset++, gain * R);
                   pixels.setValue(ch_offset++, gain * G);
                   pixels.setValue(ch_offset, gain * B);
@@ -739,11 +738,7 @@ void loop() {
             }
           }
         break;
-      }
-        
-        
-        
-        
+      }      
     }
 
 /* Streaming refresh */
