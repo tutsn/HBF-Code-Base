@@ -101,11 +101,15 @@ typedef struct {
     uint16_t    channel_count;  /* Number of channels */
     bool        multicast;      /* Enable multicast listener */
 
+    /* HBF */
+    /* Fetch Ultrasonic on/off */
+    bool        ultrasonic;
+
     /* NOISEMATRIX */
-    uint16_t    sizex; 
-    uint16_t    sizey;
-    uint16_t    fps;
-    uint16_t    spp;
+    uint16_t    matrix_xdim;
+    uint16_t    matrix_ydim;
+    uint16_t    matrix_fps;
+    uint16_t    matrix_spp;
      
 
 #if defined(ESPS_MODE_PIXEL)

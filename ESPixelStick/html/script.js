@@ -319,12 +319,15 @@ function getConfig(data) {
     $('#channel_start').val(config.e131.channel_start);
     $('#multicast').prop('checked', config.e131.multicast);
 
-    // NoiseMatrix Config
-
-    $('#m_sizex').val(config.noisematrix.sizex);
-    $('#m_sizey').val(config.noisematrix.sizey);
-    $('#m_fps').val(config.noisematrix.fps);
-		$('#m_spp').val(config.noisematrix.spp);    
+		// HBF Config
+		// fetch ultrasonic sensors
+		$('#hbf_ultrasonic').prop('checked', config.hbf.ultrasonic);
+		
+    // NoiseMatrix 
+    $('#hbf_matrix_xdim').val(config.noisematrix.xdim);    
+    $('#hbf_matrix_ydim').val(config.noisematrix.ydim);    
+		$('#hbf_matrix_fps').val(config.noisematrix.fps);
+		$('#hbf_matrix_spp').val(config.noisematrix.spp);    
 
     // Output Config
     $('.odiv').addClass('hidden');
@@ -467,10 +470,13 @@ function submitConfig() {
                 'baudrate': parseInt($('#s_baud').val())
             },
             'noisematrix': {
-                'sizex': parseInt($('#m_sizex').val()),
-                'sizey': parseInt($('#m_sizey').val()),
-                'fps': parseInt($('#m_fps').val()),
-                'spp': parseInt($('#m_spp').val())
+            		'xdim': parseInt($('#hbf_matrix_xdim').val()),
+            		'ydim': parseInt($('#hbf_matrix_ydim').val()),            
+                'fps': parseInt($('#hbf_matrix_fps').val()),
+                'spp': parseInt($('#hbf_matrix_spp').val())
+            },
+            'hbf': {
+            		'ultrasonic': $('#hbf_ultrasonic').prop('checked')
             }
             
         };

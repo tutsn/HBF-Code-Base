@@ -1,12 +1,12 @@
 {
   "network": {
-    "ssid": "",
-    "passphrase": "",
+    "ssid": "DingDong",
+    "passphrase": "Tofuburger69",
     "ip": [
       192,
       168,
       1,
-      10
+      11
     ],
     "netmask": [
       255,
@@ -20,18 +20,18 @@
       1,
       1
     ],
-    "dhcp": true,
+    "dhcp": false,
     "ap_fallback": false
   },
 
   "device": {
-    "id": "ESPixelStick"
+    "id": "ESPixelStick02"
   },
 
   "e131": {
     "universe": 1,
     "channel_start": 1,
-    "channel_count": 512,
+    "channel_count": 900,
     "multicast": false
   },
 
@@ -46,10 +46,15 @@
     "baudrate": 57600
   },
   
+  "hbf": {
+    "ultrasonic": false  
+  },
+  
   "noisematrix": {
-    "sizex": 50,
-    "sizey": 6,
+    "xdim": 50,
+    "ydim": 6,
     "fps": 25,
     "spp": 10
   }
+  
 }
