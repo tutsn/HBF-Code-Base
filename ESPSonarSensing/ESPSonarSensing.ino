@@ -3,15 +3,16 @@
 14CORE ULTRASONIC DISTANCE SENSOR CODE TEST
 ********************************************
 */
-// #define TRIGGER 5 
-// #define ECHO    4
+#include <Wire.h>  
+
+#define IO_ADDR (0x38)
 
 #define S0 16
-#define S1 5
-#define S2 4
-#define S3 0
+#define S1 0
+#define S2 2
+#define S3 14
 
-#define Z 2
+#define Z 12
 
 //#define S0 5
 //#define S1 7
@@ -37,11 +38,20 @@ void setup() {
   pinMode(S3,OUTPUT);
   pinMode(Z,OUTPUT);
   digitalWrite(Z, HIGH);
+
+  
+  Wire.begin(4,5);                // join i2c bus with address #8
+  Wire.onRequest(requestEvent); // register event
 }
  
 void loop() {
-  
-  long duration, distance;
+
+  delay(200);
+}
+
+void requestEvent() {
+  long duration;
+  int distance; // mm
 
   for(int i = 0; i < 1; i++){
       pinMode(Z,OUTPUT);
@@ -61,7 +71,8 @@ void loop() {
       Serial.println(distance);    
   }
 
-  delay(500);
+
+  Wire.write(distance); // respond with message of 6 bytes
 }
 
 // function to select pin on 74HC4067

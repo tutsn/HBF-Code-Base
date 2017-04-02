@@ -47,6 +47,7 @@ const char passphrase[] = "ENTER_PASSPHRASE_HERE";
 #include "ESPixelStick.h"
 #include "EFUpdate.h"
 #include "wshandler.h"
+#include <Wire.h>
 
 extern "C" {
 #include <user_interface.h>
@@ -138,6 +139,9 @@ void setup() {
     } else {
         LOG_PORT.println(F("*** Error setting up mDNS responder ***"));
     }
+
+    // I^2C communication setup
+    Wire.begin(4,5);
 
     /* Configure the outputs */
 #if defined (ESPS_MODE_PIXEL)
@@ -595,57 +599,26 @@ void loop() {
         case TestMode::RAINBOW:
           //run rainbow routine
           if(millis() - testing.last > 50){
-            testing.last = millis();
-            uint16_t i, WheelPos, num_pixels;
-           
-            num_pixels = config.channel_count/3;
-            if (testing.step < 255){
-              for(i=0; i< (num_pixels); i++) {
-                int ch_offset = i*3;
-                WheelPos = 255 - (((i * 256 / num_pixels) + testing.step) & 255);
-  #if defined(ESPS_MODE_PIXEL)             
-                if(WheelPos < 85) {
-                  pixels.setValue(ch_offset++, 255 - WheelPos * 3 );
-                  pixels.setValue(ch_offset++, 0 );
-                  pixels.setValue(ch_offset, WheelPos * 3 );
-                }
-                else if(WheelPos < 170) {
-                  WheelPos -= 85;
-                  pixels.setValue(ch_offset++, 0 );
-                  pixels.setValue(ch_offset++, WheelPos * 3 );
-                  pixels.setValue(ch_offset, 255 - WheelPos * 3 );
-                }
-                else {
-                  WheelPos -= 170;
-                  pixels.setValue(ch_offset++, WheelPos * 3 );
-                  pixels.setValue(ch_offset++,255 - WheelPos * 3 );
-                  pixels.setValue(ch_offset, 0 );
-                }
-  #elif defined(ESPS_MODE_SERIAL)
-                if(WheelPos < 85) {
-                  serial.setValue(ch_offset++, 255 - WheelPos * 3 );
-                  serial.setValue(ch_offset++, 0 );
-                  serial.setValue(ch_offset, WheelPos * 3 );
-                }
-                else if(WheelPos < 170) {
-                  WheelPos -= 85;
-                  serial.setValue(ch_offset++, 0 );
-                  serial.setValue(ch_offset++, WheelPos * 3 );
-                  serial.setValue(ch_offset, 255 - WheelPos * 3 );
-                }
-                else {
-                  WheelPos -= 170;
-                  serial.setValue(ch_offset++, WheelPos * 3 );
-                  serial.setValue(ch_offset++,255 - WheelPos * 3 );
-                  serial.setValue(ch_offset, 0 );
-                }           
-  #endif               
-              }
-              
+            Wire.requestFrom(8,1);    // request 6 bytes from slave device #8
+            int dist = 0;
+            while (Wire.available()) { // slave may send less than requested
+              dist = (dist + Wire.read()) / 2; // receive a byte as character
+              LOG_PORT.println(dist);         // print the character
             }
-            else testing.step = 0;
             
-            testing.step++;
+              
+            testing.last = millis();
+
+            //clear whole string
+            for(int y =0; y < config.channel_count; y++) pixels.setValue(y, 0);
+            //set pixel at step
+            int ch_offset = testing.step*3;
+            pixels.setValue(ch_offset++, 5);
+            pixels.setValue(ch_offset++, 111);
+            pixels.setValue(ch_offset, 111);
+            testing.step = dist;
+            if(testing.step >= (config.channel_count/3)) testing.step = 0;
+
           }
         break;
       }
