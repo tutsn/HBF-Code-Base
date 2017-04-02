@@ -8,6 +8,7 @@
 #define COLOR_ORDER GRB
 
 int ledMode = 1;                  // this is the starting palette
+
 const uint8_t kMatrixWidth  = 50;
 const uint8_t kMatrixHeight = 6;
 const bool    kMatrixSerpentineLayout = true;
@@ -59,11 +60,21 @@ const TProgmemRGBGradientPalettePtr gGradientPalettes[] =
 
 const uint8_t gGradientPaletteCount =  sizeof( gGradientPalettes) / sizeof( TProgmemRGBGradientPalettePtr );
 CRGBPalette16 currentPalette( CRGB::Black );
-CRGBPalette16 targetPalette( gGradientPalettes[0] );
+CRGBPalette16 targetPalette( gGradientPalettes[0] );  
 
+// functions
+void fastled_setup();
+void stairs_matrix_setup();
+void stairs_matrix(uint16_t SecondsPerPalette);
 void fillnoise8();
 void mapNoiseToLEDsUsingPalette();
 uint16_t XY( uint8_t x, uint8_t y);
+
+void fastled_setup(uint16_t num_leds)
+{
+  LEDS.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds, num_leds);
+  
+}
 
 void stairs_matrix_setup() {
 
@@ -72,7 +83,9 @@ void stairs_matrix_setup() {
   y = random16();
   z = random16();
 
-  LEDS.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds,NUM_LEDS);
+
+
+
 }
 
 

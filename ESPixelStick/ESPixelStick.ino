@@ -154,7 +154,13 @@ void setup() {
 #else
     updateConfig();
 #endif
+
+
+// setup the FastLed fallback animations when in WS2812 mode
+    fastled_setup(config.channel_count / 3);
     stairs_matrix_setup();
+
+
 
     // set D3 to OUTPUT LOW to open the LLS and show status led 
     pinMode(D3, OUTPUT);
@@ -378,11 +384,15 @@ void dsDeviceConfig(JsonObject &json) {
     config.channel_count = json["e131"]["channel_count"];
     config.multicast = json["e131"]["multicast"];
 
+    /* HBF */
+    /* Fetch Ultrasonic */
+    config.ultrasonic = json["hbf"]["ultrasonic"];
+
     /* NOISEMATRIX */
-    config.sizex = json["noisematrix"]["sizex"];
-    config.sizey = json["noisematrix"]["sizey"];
-    config.fps = json["noisematrix"]["fps"];
-    config.spp = json["noisematrix"]["spp"];
+    config.matrix_xdim = json["noisematrix"]["xdim"];
+    config.matrix_ydim = json["noisematrix"]["ydim"];    
+    config.matrix_fps = json["noisematrix"]["fps"];
+    config.matrix_spp = json["noisematrix"]["spp"];
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
@@ -485,12 +495,17 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     serial["baudrate"] = static_cast<uint32_t>(config.baudrate);
 #endif
 
+    /* HBF */
+    /* Fetch Ultrasonic */
+    JsonObject &hbf = json.createNestedObject("hbf");
+    hbf["ultrasonic"] = config.ultrasonic;
+    
     /* NOISEMATRIX */
     JsonObject &noisematrix = json.createNestedObject("noisematrix");
-    noisematrix["sizex"] = config.sizex;
-    noisematrix["sizey"] = config.sizey;
-    noisematrix["fps"] = config.fps;
-    noisematrix["spp"] = config.spp;
+    noisematrix["xdim"] = config.matrix_xdim;
+    noisematrix["ydim"] = config.matrix_ydim;
+    noisematrix["fps"] = config.matrix_fps;
+    noisematrix["spp"] = config.matrix_spp;
 
     if (pretty)
         json.prettyPrintTo(jsonString);
@@ -580,12 +595,12 @@ void loop() {
         case TestMode::NOISEMATRIX:
           //run noise matrix
           
-          if(millis() - testing.last > (1000 / config.fps)){
+          if(millis() - testing.last > (1000 / config.matrix_fps)){
             //time for new step
             testing.last = millis();
 
           // call customized FastLed-routine and build a single frame
-          stairs_matrix(config.spp);
+          stairs_matrix(config.matrix_spp);
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver

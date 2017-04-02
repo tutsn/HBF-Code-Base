@@ -26,6 +26,7 @@
           <li class="active"><a href="#home">Home</a></li>
           <li><a href="#wifi">Wireless Setup</a></li>
           <li><a href="#config">Device Setup</a></li>
+          <li><a href="#hbf">HBF Setup</a></li>
           <li><a href="#test">Testing</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -177,44 +178,6 @@
               </div>
             </div>
           </div>
-          
-          
-          
-          <!-- Testing - NoiseMatrix -->
-          <div id="o_noisematrix" class="odiv hidden">
-            <legend class="esps-legend">NoiseMatrix Configuration</legend>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="m_sizex">Size X</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="m_sizex" name="m_sizex" placeholder="Enter x dimension of matrix">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="m_sizey">Size Y</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="m_sizey" name="m_sizey" placeholder="Enter y dimension of matrix">
-              </div>
-              <label class="control-label col-sm-2" for="m_sizey">WARNING:</label>
-              <div class="col-sm-10">
-              <p style="margin-top:6px">x*y must not exceed Pixel Count!!</p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="m_fps">FPS</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="m_fps" name="m_fps" placeholder="Desired fps (animation speed)">
-              </div>
-            </div>   
-           <div class="form-group">
-              <label class="control-label col-sm-2" for="m_spp">Seconds per palette</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="m_spp" name="m_spp" placeholder="Seconds per palette">
-              </div>
-            </div>                                  
-          </div>          
-          
-          
-          
 
           <!-- Device Config Save -->
           <div class="form-group">
@@ -227,6 +190,102 @@
         </form>
       </fieldset>
     </div>
+
+
+
+
+
+
+
+
+    <!-- HBF Configuration -->
+    <div id="hbf" class="mdiv hidden anchor">
+      <fieldset>
+        <legend class="esps-legend">HBF Configuration</legend>
+        <form class="form-horizontal">
+                     
+
+
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="hbf_neopixel_mode">Neopixel Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="hbf_neopixel_mode" name="hbf_neopixel_mode">
+                <option value="vertical">Vertical Row</option>
+                <option value="horizontal">Horizontal Row</option>
+                <option value="stairs">Stairs</option>
+
+              </select>
+            </div>
+          </div>
+
+
+
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="t_mode">Fetch Ultrasonic (I2C)</label>
+            <div class="col-sm-10">
+            <div class="checkbox"><label><input type="checkbox" id="hbf_ultrasonic" name="hbf_ultrasonic"> Enable Ultrasonic Sensor Fetch via I2C</label></div>
+            </div>
+          </div>
+                   
+                    
+                    
+                     
+          <!-- NoiseMatrix -->
+          <div id="o_noisematrix" class="odiv hidden">
+            <legend class="esps-legend">NoiseMatrix Configuration</legend>
+            
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_xdim">X Dimension (pixel per step)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_xdim" name="hbf_matrix_xdim" placeholder="width of matrix">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_ydim">Y Dimension (steps)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_ydim" name="hbf_matrix_ydim" placeholder="height of matrix">
+              </div>
+            </div>                           
+            
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_fps">FPS</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_fps" name="hbf_matrix_fps" placeholder="Desired fps (animation speed)">
+              </div>
+            </div>   
+           <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_spp">Seconds per palette</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_spp" name="hbf_matrix_spp" placeholder="Seconds per palette">
+              </div>
+            </div>                                  
+          </div>           
+        
+     
+     
+     
+          <!-- HBF Config Save -->
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="refresh">Refresh Rate</label>
+            <div class="col-sm-10"><p class="form-control-static" id="refresh"></p></div>
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="button" onclick="submitConfig()" class="btn btn-primary">Save Changes</button>
+            </div>
+          </div>     
+
+        </form>
+      </fieldset>
+    </div>
+
+
+
+
+
+
+
+
+
+
 
     <!-- Display Testing -->
     <div id="test" class="mdiv hidden anchor">
