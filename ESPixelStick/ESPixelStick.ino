@@ -99,14 +99,15 @@ void setup() {
     loadConfig();
     config.testmode = TestMode::DISABLED;
 
-    /* Fallback to default SSID and passphrase if we fail to connect */
+   
     int status = initWifi();
+     /* Fallback to default SSID and passphrase if we fail to connect 
     if (status != WL_CONNECTED) {
         LOG_PORT.println(F("*** Timeout - Reverting to default SSID ***"));
         config.ssid = ssid;
         config.passphrase = passphrase;
         status = initWifi();
-    }
+    } */
 
     /* If we fail again, go SoftAP or reboot */
     if (status != WL_CONNECTED) {
@@ -117,7 +118,8 @@ void setup() {
             WiFi.softAP(ssid.c_str());
         } else {
             LOG_PORT.println(F("**** FAILED TO ASSOCIATE WITH AP, REBOOTING ****"));
-            ESP.restart();
+            ESP.eraseConfig();
+            ESP.reset();
         }
     }
 
@@ -158,8 +160,9 @@ void setup() {
 int initWifi() {
     /* Switch to station mode and disconnect just in case */
     WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
     delay(secureRandom(100,500));
+    WiFi.disconnect();
+    delay(secureRandom(2000,5000));
 
 
     LOG_PORT.println("");
