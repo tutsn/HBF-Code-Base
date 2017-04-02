@@ -44,5 +44,12 @@
   "serial": {
     "type": 0,
     "baudrate": 57600
+  },
+  
+  "noisematrix": {
+    "sizex": 50,
+    "sizey": 6,
+    "fps": 25,
+    "spp": 10
   }
 }

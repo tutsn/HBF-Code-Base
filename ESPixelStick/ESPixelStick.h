@@ -26,6 +26,9 @@
 #include "SerialDriver.h"
 #endif
 
+// include additional testing animations for fallback/backup purposes
+#include "stairs_matrix.h"
+
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
 
@@ -36,7 +39,7 @@ const char VERSION[] = "2.1-dev (20161214)";
 #define PIXEL_LIMIT     1360    /* Total pixel limit - 40.85ms for 8 universes */
 #define RENARD_LIMIT    2048    /* Channel limit for serial outputs */
 #define E131_TIMEOUT    1000    /* Force refresh every second an E1.31 packet is not seen */
-#define CONNECT_TIMEOUT 15000   /* 15 seconds */
+#define CONNECT_TIMEOUT 10000   /* 15 seconds */
 #define REBOOT_DELAY    100     /* Delay for rebooting once reboot flag is set */
 #define LOG_PORT        Serial  /* Serial port for console logging */
 
@@ -60,6 +63,9 @@ enum class DevMode : uint8_t {
 /* Test Modes */
 enum class TestMode : uint8_t {
     DISABLED,
+    NOISEMATRIX,
+    FIRE,
+    SPARKLE,
     STATIC,
     CHASE,
     RAINBOW,
@@ -94,6 +100,13 @@ typedef struct {
     uint16_t    channel_start;  /* Channel to start listening at - 1 based */
     uint16_t    channel_count;  /* Number of channels */
     bool        multicast;      /* Enable multicast listener */
+
+    /* NOISEMATRIX */
+    uint16_t    sizex; 
+    uint16_t    sizey;
+    uint16_t    fps;
+    uint16_t    spp;
+     
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixels */

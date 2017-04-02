@@ -319,11 +319,19 @@ function getConfig(data) {
     $('#channel_start').val(config.e131.channel_start);
     $('#multicast').prop('checked', config.e131.multicast);
 
+    // NoiseMatrix Config
+
+    $('#m_sizex').val(config.noisematrix.sizex);
+    $('#m_sizey').val(config.noisematrix.sizey);
+    $('#m_fps').val(config.noisematrix.fps);
+		$('#m_spp').val(config.noisematrix.spp);    
+
     // Output Config
     $('.odiv').addClass('hidden');
     if (config.device.mode === 0) {  // Pixel
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
+				$('#o_noisematrix').removeClass('hidden');        
         $('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
@@ -348,6 +356,7 @@ function getConfig(data) {
     if (config.device.mode == 1) {  // Serial
         mode = 'serial';
         $('#o_serial').removeClass('hidden');
+        $('#o_noisematrix').removeClass('hidden');  
         $('#s_count').val(config.e131.channel_count);
         $('#s_proto').val(config.serial.type);
         $('#s_baud').val(config.serial.baudrate);
@@ -456,7 +465,14 @@ function submitConfig() {
             'serial': {
                 'type': parseInt($('#s_proto').val()),
                 'baudrate': parseInt($('#s_baud').val())
+            },
+            'noisematrix': {
+                'sizex': parseInt($('#m_sizex').val()),
+                'sizey': parseInt($('#m_sizey').val()),
+                'fps': parseInt($('#m_fps').val()),
+                'spp': parseInt($('#m_spp').val())
             }
+            
         };
     ws.send('S2' + JSON.stringify(json));
     setColorOrder(parseInt($('#p_color').val()));
@@ -508,6 +524,11 @@ function test() {
     else if (!tmode.localeCompare('t_rainbow')) {
         ws.send('T3');
     }
+    
+		else if (!tmode.localeCompare('t_noisematrix')) {
+        ws.send('T5');
+    
+    }    
     else if (!tmode.localeCompare('t_view')) {
         ws.send('T4');
     }
