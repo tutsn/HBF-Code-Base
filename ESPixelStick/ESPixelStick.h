@@ -42,6 +42,7 @@ const char VERSION[] = "2.1-dev (20161214)";
 #define CONNECT_TIMEOUT 10000   /* 15 seconds */
 #define REBOOT_DELAY    100     /* Delay for rebooting once reboot flag is set */
 #define LOG_PORT        Serial  /* Serial port for console logging */
+#define M_PI            3.14159265358979323846  /* pi */
 
 /* E1.33 / RDMnet stuff - to be moved to library */
 #define RDMNET_DNSSD_SRV_TYPE   "draft-e133.tcp"

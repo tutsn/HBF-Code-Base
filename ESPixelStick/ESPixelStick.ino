@@ -27,8 +27,8 @@
 //#define ESPS_MODE_SERIAL
 
 /* Fallback configuration if config.json is empty or fails */
-const char ssid[] = "ENTER_SSID_HERE";
-const char passphrase[] = "ENTER_PASSPHRASE_HERE";
+const char ssid[] = "capetown";
+const char passphrase[] = "strangersrest123";
 
 /*****************************************/
 /*         END - Configuration           */
@@ -56,6 +56,8 @@ extern "C" {
 
 uint8_t             *seqTracker;        /* Current sequence numbers for each Universe */
 uint32_t            lastUpdate;         /* Update timeout tracker */
+uint32_t           footStepTime;
+
 
 /* Forward Declarations */
 void loadConfig();
@@ -145,6 +147,9 @@ void setup() {
 
     // I^2C communication setup
     Wire.begin(4,5);
+
+    //SonarStairs
+    footStepTime = millis();
 
     /* Configure the outputs */
 #if defined (ESPS_MODE_PIXEL)
@@ -680,28 +685,58 @@ void loop() {
         
         
         case TestMode::RAINBOW:
+          double R = double(0.0196);
+          double G = double(0.490196);
+          double B = double(0.490196);
           //run rainbow routine
-          if(millis() - testing.last > 50){
+          if(millis() - testing.last > 10){
             Wire.requestFrom(8,1);    // request 6 bytes from slave device #8
             int dist = 0;
             while (Wire.available()) { // slave may send less than requested
-              dist = (dist + Wire.read()) / 2; // receive a byte as character
-              LOG_PORT.println(dist);         // print the character
+              dist = Wire.read(); // receive a byte as character
+              // LOG_PORT.println(R);         // print the character
             }
             
-              
             testing.last = millis();
+            int maxTime = 5000;
 
-            //clear whole string
-            for(int y =0; y < config.channel_count; y++) pixels.setValue(y, 0);
-            //set pixel at step
-            int ch_offset = testing.step*3;
-            pixels.setValue(ch_offset++, 5);
-            pixels.setValue(ch_offset++, 111);
-            pixels.setValue(ch_offset, 111);
-            testing.step = dist;
-            if(testing.step >= (config.channel_count/3)) testing.step = 0;
+            if ((dist > 0) && (dist < 80) && (millis() - footStepTime > maxTime + 5000)){
+                footStepTime = millis();
+                testing.step = dist;
+                LOG_PORT.println(dist);
+            }
 
+            if (millis() - footStepTime < maxTime){
+
+                double t = (millis() - footStepTime) / 1000.0;
+                double p = double(0.6 * testing.step);
+                  
+                for(int y =0; y < (config.channel_count/3); y++) {
+                    int ch_offset = y * 3;
+                    double x = (0.1 * t * double(y - p));
+                    if (x == 0) x += 0.1;
+                    double gain = 255 * (sin(2 * M_PI * t) * (sin(x) / x) + 1) / 2.0;
+        
+                    pixels.setValue(ch_offset++, gain * R);
+                    pixels.setValue(ch_offset++, gain* G);
+                    pixels.setValue(ch_offset, gain * B);                    
+  
+                    //LOG_PORT.println(gain * R); 
+                    //LOG_PORT.print(" "); 
+                }
+  
+                LOG_PORT.println(""); 
+            }
+            else {
+                for (int i = 0 ; i < (config.channel_count/3) ; i++)
+                {
+                  int ch_offset = i*3;
+                  double gain = 255 * (sin(2 * M_PI * (millis() / 1000.0)) * sin(i) + 1) / 2.0;
+                  pixels.setValue(ch_offset++, gain * R);
+                  pixels.setValue(ch_offset++, gain * G);
+                  pixels.setValue(ch_offset, gain * B);
+                }
+            }
           }
         break;
       }

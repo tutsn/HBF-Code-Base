@@ -1,194 +1,81 @@
-/*
-********************************************
-14CORE ULTRASONIC DISTANCE SENSOR CODE TEST
-********************************************
-*/
-#include <Wire.h>  
+#include <NewPing.h>
+#include <Wire.h>
 
-#define IO_ADDR (0x38)
+#define SONAR_NUM     2 // Number of sensors.
+#define MAX_DISTANCE 100 // Maximum distance (in cm) to ping.
+#define PING_INTERVAL 33 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
 
-#define S0 16
-#define S1 0
-#define S2 2
-#define S3 14
+unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
+unsigned int cm[SONAR_NUM];         // Where the ping distances are stored.
+uint8_t currentSensor = 0;          // Keeps track of which sensor is active.
 
-#define Z 12
+NewPing sonar[SONAR_NUM] = {     // Sensor object array.
+  NewPing(35, 33, MAX_DISTANCE), // Each sensor's trigger pin, echo pin, and max distance to ping.
+  NewPing(6, 5, MAX_DISTANCE)
+};
 
-//#define S0 5
-//#define S1 7
-//#define S2 6
-//#define S3 1
- 
-// holds incoming values from 74HC4067                  
-byte muxValues[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,};
-int toggle = 0;
- 
-// NodeMCU Pin D1 > TRIGGER | Pin D2 > ECHO
- 
+#define Gn 31, 4
+#define V5 37, 7
+
+int gnPins[] = {
+  31, 4
+};
+
+int v5Pins[] = {
+  37, 7
+};
+
 void setup() {
   
-  Serial.begin (9600);
-  // pinMode(TRIGGER, OUTPUT);
-  // pinMode(ECHO, INPUT);
-  // pinMode(BUILTIN_LED, OUTPUT);
+  Serial.begin (115200);
     
-  pinMode(S0,OUTPUT);
-  pinMode(S1,OUTPUT);
-  pinMode(S2,OUTPUT);
-  pinMode(S3,OUTPUT);
-  pinMode(Z,OUTPUT);
-  digitalWrite(Z, HIGH);
+  for (int i = 0; i < 1; i++) {
+    pinMode(gnPins[i],OUTPUT);
+    pinMode(v5Pins[i],OUTPUT);
+    digitalWrite(gnPins[i], LOW);
+    digitalWrite(v5Pins[i], HIGH);
+  }
 
+  pingTimer[0] = millis() + 75;           // First ping starts at 75ms, gives time for the Arduino to chill before starting.
+  for (uint8_t i = 1; i < SONAR_NUM; i++) // Set the starting time for each sensor.
+    pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
   
-  Wire.begin(4,5);                // join i2c bus with address #8
+
+  //I2C on address 8 - Slave
+  Wire.begin(8);                // join i2c bus with address #8
   Wire.onRequest(requestEvent); // register event
 }
  
 void loop() {
+  for (uint8_t i = 0; i < SONAR_NUM; i++) { // Loop through all the sensors.
+    if (millis() >= pingTimer[i]) {         // Is it this sensor's time to ping?
+      pingTimer[i] += PING_INTERVAL * SONAR_NUM;  // Set next time this sensor will be pinged.
+      if (i == 0 && currentSensor == SONAR_NUM - 1) oneSensorCycle(); // Sensor ping cycle complete, do something with the results.
+      sonar[currentSensor].timer_stop();          // Make sure previous timer is canceled before starting a new ping (insurance).
+      currentSensor = i;                          // Sensor being accessed.
+      //cm[currentSensor] = 0;                      // Make distance zero in case there's no ping echo for this sensor.
+      sonar[currentSensor].ping_timer(echoCheck); // Do the ping (processing continues, interrupt will call echoCheck to look for echo).
+      sonar[currentSensor].ping_median(5);
+    }
+  }
+}
 
-  delay(200);
+void echoCheck() { // If ping received, set the sensor distance to array.
+  if (sonar[currentSensor].check_timer())
+    cm[currentSensor] = sonar[currentSensor].ping_result / US_ROUNDTRIP_CM;
+}
+
+void oneSensorCycle() { // Sensor ping cycle complete, do something with the results.
+  // The following code would be replaced with your code that does something with the ping results.
+  for (uint8_t i = 0; i < SONAR_NUM; i++) {
+    // Serial.println(cm[0]);
+  }
 }
 
 void requestEvent() {
-  long duration;
-  int distance; // mm
-
-  for(int i = 0; i < 1; i++){
-      pinMode(Z,OUTPUT);
-      digitalWrite(Z, LOW);
-      setPin(i);
-      delayMicroseconds(2); 
-      
-      digitalWrite(Z, LOW);
-      delayMicroseconds(10); 
-      
-      digitalWrite(Z, LOW);
-      pinMode(Z,INPUT);
-      setPin(i + 8);
-      duration = pulseIn(Z, HIGH);
-      distance = (duration/2) / 2.91;
-      
-      Serial.println(distance);    
-  }
-
-
-  Wire.write(distance); // respond with message of 6 bytes
+  Serial.println(cm[0]);
+  Wire.write(cm[0]); // respond with message of 1 bytes
+  cm[0] = 0;                      // Make distance zero in case there's no ping echo for this sensor.
 }
 
-// function to select pin on 74HC4067
-void setPin(int outputPin) {
-  switch(outputPin) {
-    case 0 :
-      Serial.println("Pin 0");  
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, LOW);
-      break;
-    case 1 :
-      Serial.println("Pin 1");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, LOW);
-      break;
-    case 2 :
-      Serial.println("Pin 2");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, LOW);
-      break;
-    case 3 :
-      Serial.println("Pin 3");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, LOW);
-      break;
-    case 4 :
-      Serial.println("Pin 4");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, LOW);
-      break;
-    case 5 :
-      Serial.println("Pin 5");  
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, LOW);
-      break;
-    case 6 :
-      Serial.println("Pin 6");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, LOW);
-      break;
-    case 7 :
-      Serial.println("Pin 7");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, LOW);
-      break;
-    case 8 :
-      Serial.println("Pin 8");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, HIGH);
-      break;
-    case 9 :
-      Serial.println("Pin 9");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, HIGH);
-      break;
-    case 10 :
-      Serial.println("Pin 10");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, HIGH);
-      break;
-    case 11 :
-      Serial.println("Pin 11");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, LOW);
-      digitalWrite(S3, HIGH);
-      break;
-    case 12 :
-      Serial.println("Pin 12");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, HIGH);
-      break;
-    case 13 :
-      Serial.println("Pin 13");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, LOW);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, HIGH);
-      break;
-    case 14 :
-      Serial.println("Pin 14");
-      digitalWrite(S0, LOW);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, HIGH);
-      break;
-    case 15 :
-      Serial.println("Pin 15");
-      digitalWrite(S0, HIGH);
-      digitalWrite(S1, HIGH);
-      digitalWrite(S2, HIGH);
-      digitalWrite(S3, HIGH);
-      break;
-   }
-}
+
