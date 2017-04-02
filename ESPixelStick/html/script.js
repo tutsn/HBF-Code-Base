@@ -320,6 +320,9 @@ function getConfig(data) {
     $('#multicast').prop('checked', config.e131.multicast);
 
 		// HBF Config
+		// Neopixel Mode
+		$('#hbf_neopixel_mode').val(config.hbf.neopixel_mode);    		
+		
 		// fetch ultrasonic sensors
 		$('#hbf_ultrasonic').prop('checked', config.hbf.ultrasonic);
 		
@@ -327,14 +330,21 @@ function getConfig(data) {
     $('#hbf_matrix_xdim').val(config.noisematrix.xdim);    
     $('#hbf_matrix_ydim').val(config.noisematrix.ydim);    
 		$('#hbf_matrix_fps').val(config.noisematrix.fps);
-		$('#hbf_matrix_spp').val(config.noisematrix.spp);    
+		$('#hbf_matrix_spp').val(config.noisematrix.spp); 
+		
+    // Fire 
+    $('#hbf_fire_fps').val(config.fire.fps);    
+    $('#hbf_fire_cooling').val(config.fire.cooling);    
+		$('#hbf_fire_sparking').val(config.fire.sparking);
+			  
 
     // Output Config
     $('.odiv').addClass('hidden');
     if (config.device.mode === 0) {  // Pixel
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
-				$('#o_noisematrix').removeClass('hidden');        
+				$('#o_noisematrix').removeClass('hidden');
+				$('#o_fire').removeClass('hidden');            
         $('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
@@ -359,7 +369,8 @@ function getConfig(data) {
     if (config.device.mode == 1) {  // Serial
         mode = 'serial';
         $('#o_serial').removeClass('hidden');
-        $('#o_noisematrix').removeClass('hidden');  
+        $('#o_noisematrix').removeClass('hidden');
+				$('#o_fire').removeClass('hidden');   
         $('#s_count').val(config.e131.channel_count);
         $('#s_proto').val(config.serial.type);
         $('#s_baud').val(config.serial.baudrate);
@@ -475,8 +486,16 @@ function submitConfig() {
                 'fps': parseInt($('#hbf_matrix_fps').val()),
                 'spp': parseInt($('#hbf_matrix_spp').val())
             },
+            'fire': {
+            		'fps': parseInt($('#hbf_fire_fps').val()),
+            		'cooling': parseInt($('#hbf_fire_cooling').val()),            
+                'sparking': parseInt($('#hbf_fire_sparking').val())                
+            },            
             'hbf': {
-            		'ultrasonic': $('#hbf_ultrasonic').prop('checked')
+            		'ultrasonic': $('#hbf_ultrasonic').prop('checked'),
+            		'neopixel_mode': parseInt($('#hbf_neopixel_mode').val()),
+            		
+            		
             }
             
         };
@@ -533,7 +552,12 @@ function test() {
     
 		else if (!tmode.localeCompare('t_noisematrix')) {
         ws.send('T5');
-    
+		}        
+		else if (!tmode.localeCompare('t_fire')) {
+        ws.send('T6');
+		}		
+		else if (!tmode.localeCompare('t_sparkle')) {
+        ws.send('T7');				        
     }    
     else if (!tmode.localeCompare('t_view')) {
         ws.send('T4');

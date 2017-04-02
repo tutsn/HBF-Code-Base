@@ -99,6 +99,11 @@ void procE(uint8_t *data, AsyncWebSocketClient *client) {
             s_baud["250000"] = static_cast<uint32_t>(BaudRate::BR_250000);
             s_baud["460800"] = static_cast<uint32_t>(BaudRate::BR_460800);
 #endif
+            // Neopixel Modes
+            JsonObject &hbf_neopixel_mode = json.createNestedObject("hbf_neopixel_mode");
+            hbf_neopixel_mode["Horizontal"] = static_cast<uint8_t>(NeopixelMode::Horizontal);
+            hbf_neopixel_mode["Vertical"] = static_cast<uint8_t>(NeopixelMode::Vertical);
+            hbf_neopixel_mode["Stairs"] = static_cast<uint8_t>(NeopixelMode::Stairs);
 
             String response;
             json.printTo(response);
@@ -222,6 +227,16 @@ void procT(uint8_t *data, AsyncWebSocketClient *client) {
         case '5': // NOISEMATRIX
             config.testmode = TestMode::NOISEMATRIX;
             LOG_PORT.println("TESTMODE NOISEMATRIX");
+        break;
+
+        case '6': // FIRE
+            config.testmode = TestMode::FIRE;
+            LOG_PORT.println("TESTMODE FIRE");
+        break;
+        case '7': // SPARKLE
+            config.testmode = TestMode::SPARKLE;
+            LOG_PORT.println("TESTMODE SPARKLE");                        
+        break;
     }
 }
 

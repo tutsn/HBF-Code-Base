@@ -47,7 +47,8 @@
   },
   
   "hbf": {
-    "ultrasonic": false  
+    "ultrasonic": false,
+    "neopixel_mode": 0  
   },
   
   "noisematrix": {
@@ -55,6 +56,12 @@
     "ydim": 6,
     "fps": 25,
     "spp": 10
-  }
+  },
+  
+  "fire": {
+    "fps": 150,
+    "cooling": 50,
+    "sparking": 10
+  }  
   
 }

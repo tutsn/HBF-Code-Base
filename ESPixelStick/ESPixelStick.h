@@ -27,7 +27,7 @@
 #endif
 
 // include additional testing animations for fallback/backup purposes
-#include "stairs_matrix.h"
+#include "bak_animations.h"
 
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
@@ -53,6 +53,13 @@ const char VERSION[] = "2.1-dev (20161214)";
 /* Configuration file params */
 const char CONFIG_FILE[] = "/config.json";
 #define CONFIG_MAX_SIZE 2048    /* Sanity limit for config file */
+
+/* Neopixel Modes */
+enum class NeopixelMode : uint8_t {
+    Horizontal,
+    Vertical,
+    Stairs
+};
 
 /* Pixel Types */
 enum class DevMode : uint8_t {
@@ -104,13 +111,18 @@ typedef struct {
     /* HBF */
     /* Fetch Ultrasonic on/off */
     bool        ultrasonic;
+    NeopixelMode  neopixel_mode;
 
     /* NOISEMATRIX */
     uint16_t    matrix_xdim;
     uint16_t    matrix_ydim;
     uint16_t    matrix_fps;
     uint16_t    matrix_spp;
-     
+
+    /* NOISEMATRIX */
+    uint16_t    fire_fps;
+    uint16_t    fire_cooling;
+    uint16_t    fire_sparking;     
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixels */

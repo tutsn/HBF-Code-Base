@@ -381,6 +381,9 @@ void dsDeviceConfig(JsonObject &json) {
     config.multicast = json["e131"]["multicast"];
 
     /* HBF */
+    /* Neopixel Modes */
+    config.neopixel_mode = NeopixelMode(static_cast<uint8_t>(json["hbf"]["neopixel_mode"]));
+    
     /* Fetch Ultrasonic */
     config.ultrasonic = json["hbf"]["ultrasonic"];
 
@@ -389,6 +392,11 @@ void dsDeviceConfig(JsonObject &json) {
     config.matrix_ydim = json["noisematrix"]["ydim"];    
     config.matrix_fps = json["noisematrix"]["fps"];
     config.matrix_spp = json["noisematrix"]["spp"];
+
+    /* Fire */
+    config.fire_fps = json["fire"]["fps"];
+    config.fire_cooling = json["fire"]["cooling"];
+    config.fire_sparking = json["fire"]["sparking"];   
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
@@ -492,8 +500,12 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
 #endif
 
     /* HBF */
-    /* Fetch Ultrasonic */
     JsonObject &hbf = json.createNestedObject("hbf");
+
+    /* Neopixel Modes */
+    hbf["neopixel_mode"] = static_cast<uint8_t>(config.neopixel_mode);
+
+    /* Fetch Ultrasonic */
     hbf["ultrasonic"] = config.ultrasonic;
     
     /* NOISEMATRIX */
@@ -502,6 +514,13 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     noisematrix["ydim"] = config.matrix_ydim;
     noisematrix["fps"] = config.matrix_fps;
     noisematrix["spp"] = config.matrix_spp;
+
+    /* Fire */
+    JsonObject &fire = json.createNestedObject("fire");
+    fire["fps"] = config.fire_fps;
+    fire["cooling"] = config.fire_cooling;
+    fire["sparking"] = config.fire_sparking;
+    
 
     if (pretty)
         json.prettyPrintTo(jsonString);
@@ -626,6 +645,85 @@ void loop() {
         #endif 
           }
         break;
+
+case TestMode::FIRE:
+          //run noise matrix
+          
+          if(millis() - testing.last > (1000 / config.fire_fps)){
+            //time for new step
+            testing.last = millis();
+
+          // call customized FastLed-routine and build a single frame
+          Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
+          
+        #if defined(ESPS_MODE_PIXEL)    
+            // now copy the FastLed frame to PixelDriver
+            // NUM_LEDS comes from FastLed-routine btw.
+
+            // ++ check if NUM_LEDS exceeds Pixel count ! 
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, leds[i].r);
+              pixels.setValue(ch_offset++, leds[i].g);
+              pixels.setValue(ch_offset, leds[i].b);
+            }
+        
+        #elif defined(ESPS_MODE_SERIAL)
+            
+            // ++ check if NUM_LEDS exceeds Pixel count !
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              LOG_PORT.print(leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].b);
+              LOG_PORT.println(" - ");
+            }
+        #endif 
+          }
+        break;
+
+case TestMode::SPARKLE:
+          //run noise matrix
+          
+          if(millis() - testing.last > (1000 / config.matrix_fps)){
+            //time for new step
+            testing.last = millis();
+
+          // call customized FastLed-routine and build a single frame
+          stairs_matrix(config.matrix_spp);
+          
+        #if defined(ESPS_MODE_PIXEL)    
+            // now copy the FastLed frame to PixelDriver
+            // NUM_LEDS comes from FastLed-routine btw.
+
+            // ++ check if NUM_LEDS exceeds Pixel count ! 
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, leds[i].r);
+              pixels.setValue(ch_offset++, leds[i].g);
+              pixels.setValue(ch_offset, leds[i].b);
+            }
+        
+        #elif defined(ESPS_MODE_SERIAL)
+            
+            // ++ check if NUM_LEDS exceeds Pixel count !
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              LOG_PORT.print(leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].b);
+              LOG_PORT.println(" - ");
+            }
+        #endif 
+          }
+        break;        
+        
        
         case TestMode::STATIC: {
           

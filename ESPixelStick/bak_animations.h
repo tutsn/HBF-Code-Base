@@ -1,48 +1,13 @@
+// #################### General and FastLed Configuration
+
 #include <FastLED.h>
-#include "stairs_matrix_palettes.h"
-
+#include "bak_animations_palettes.h"
 #define LOG_PORT        Serial  /* Serial port for console logging */
-
 #define LED_PIN     5
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
 
-int ledMode = 1;                  // this is the starting palette
-
-const uint8_t kMatrixWidth  = 50;
-const uint8_t kMatrixHeight = 6;
-const bool    kMatrixSerpentineLayout = true;
-
-#define NUM_LEDS (kMatrixWidth * kMatrixHeight)
-#define MAX_DIMENSION ((kMatrixWidth>kMatrixHeight) ? kMatrixWidth : kMatrixHeight)
-
-// The leds
-CRGB leds[kMatrixWidth * kMatrixHeight];
-
-// The 16 bit version of our coordinates
-static uint16_t x;
-static uint16_t y;
-static uint16_t z;
-
-// We're using the x/y dimensions to map to the x/y pixels on the matrix.  We'll
-// use the z-axis for "time".  speed determines how fast time moves forward.  Try
-// 1 for a very slow moving effect, or 60 for something that ends up looking like
-// water.
-
-uint16_t speed = 1; // speed is set dynamically once we've started up
-
-// Scale determines how far apart the pixels in our noise matrix are.  Try
-// changing these values around to see how it affects the motion of the display.  The
-// higher the value of scale, the more "zoomed out" the noise iwll be.  A value
-// of 1 will be so zoomed in, you'll mostly see solid colors.
-
-uint16_t scale = 20; // scale is set dynamically once we've started up
-
-// This is the array that we keep our computed noise values in
-uint8_t noise[MAX_DIMENSION][MAX_DIMENSION];
-
-uint8_t gCurrentPaletteNumber = 0;
-uint8_t colorLoop = 1;
+// #################### Palette Configuration
 
 const TProgmemRGBGradientPalettePtr gGradientPalettes[] = 
 {
@@ -59,22 +24,63 @@ const TProgmemRGBGradientPalettePtr gGradientPalettes[] =
 };
 
 const uint8_t gGradientPaletteCount =  sizeof( gGradientPalettes) / sizeof( TProgmemRGBGradientPalettePtr );
-CRGBPalette16 currentPalette( CRGB::Black );
+CRGBPalette16 currentPalette( HeatColors_p );
 CRGBPalette16 targetPalette( gGradientPalettes[0] );  
+
+
+// #################### Matrix Configuration
+
+int ledMode = 1;                  // this is the starting palette
+const uint8_t kMatrixWidth  = 50;
+const uint8_t kMatrixHeight = 6;
+const bool    kMatrixSerpentineLayout = true;
+#define NUM_LEDS (kMatrixWidth * kMatrixHeight)
+#define MAX_DIMENSION ((kMatrixWidth>kMatrixHeight) ? kMatrixWidth : kMatrixHeight)
+static uint16_t x;
+static uint16_t y;
+static uint16_t z;
+uint16_t speed = 1; // speed is set dynamically once we've started up
+uint16_t scale = 20; // scale is set dynamically once we've started up
+
+// This is the array that we keep our computed noise values in
+uint8_t noise[MAX_DIMENSION][MAX_DIMENSION];
+
+uint8_t gCurrentPaletteNumber = 0;
+uint8_t colorLoop = 1;
+
+
+// #################### Fire Configuration
+
+#define COOLING  55
+#define SPARKING 120
+bool gReverseDirection = false;
+
+
+// The leds
+CRGB leds[kMatrixWidth * kMatrixHeight];
 
 // functions
 void fastled_setup();
+void fire_setup();
 void stairs_matrix_setup();
 void stairs_matrix(uint16_t SecondsPerPalette);
 void fillnoise8();
 void mapNoiseToLEDsUsingPalette();
 uint16_t XY( uint8_t x, uint8_t y);
+void Fire2012WithPalette(uint8_t cooling, uint8_t sparking);
+
+// ###########################################################################
 
 void fastled_setup(uint16_t num_leds)
 {
-  LEDS.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds, num_leds);
-  
+  LEDS.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds, num_leds); 
 }
+
+// ###########################################################################
+
+
+
+// ###########################################################################
 
 void stairs_matrix_setup() {
 
@@ -83,11 +89,9 @@ void stairs_matrix_setup() {
   y = random16();
   z = random16();
 
-
-
-
 }
 
+// ###########################################################################
 
 void stairs_matrix(uint16_t SecondsPerPalette) {
 
@@ -108,6 +112,7 @@ void stairs_matrix(uint16_t SecondsPerPalette) {
   mapNoiseToLEDsUsingPalette();
 }
 
+// ###########################################################################
 
 void fillnoise8() {
   // Fill the x/y array of 8-bit noise values using the inoise8 function.
@@ -145,6 +150,8 @@ void fillnoise8() {
   y -= speed / 16;
 }
 
+// ###########################################################################
+
 void mapNoiseToLEDsUsingPalette()
 {
   static uint8_t ihue=0;
@@ -177,6 +184,7 @@ void mapNoiseToLEDsUsingPalette()
   ihue+=1;
 }
 
+// ###########################################################################
 
 uint16_t XY( uint8_t x, uint8_t y)
 {
@@ -196,4 +204,48 @@ uint16_t XY( uint8_t x, uint8_t y)
   }
   return i;
 }
+
+// ###########################################################################
+
+void Fire2012WithPalette(uint8_t cooling, uint8_t sparking)
+{
+// Array of temperature readings at each simulation cell
+  static byte heat[NUM_LEDS];
+
+  // Step 1.  Cool down every cell a little
+    for( int i = 0; i < NUM_LEDS; i++) {
+      heat[i] = qsub8( heat[i],  random8(0, ((cooling * 10) / NUM_LEDS) + 2));
+    }
+  
+    // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+    for( int k= NUM_LEDS - 1; k >= 2; k--) {
+      heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+    }
+    
+    // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+    if( random8() < sparking ) {
+      int y = random8(7);
+      heat[y] = qadd8( heat[y], random8(160,255) );
+    }
+
+    // Step 4.  Map from heat cells to LED colors
+    for( int j = 0; j < NUM_LEDS; j++) {
+      // Scale the heat value from 0-255 down to 0-240
+      // for best results with color palettes.
+      byte colorindex = scale8( heat[j], 240);
+      CRGB color = ColorFromPalette( currentPalette, colorindex);
+      int pixelnumber;
+      if( gReverseDirection ) {
+        pixelnumber = (NUM_LEDS-1) - j;
+      } else {
+        pixelnumber = j;
+      }
+      leds[pixelnumber] = color;
+    }
+}
+
+// ###########################################################################
+
+
+
 
