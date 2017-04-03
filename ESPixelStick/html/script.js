@@ -337,6 +337,14 @@ function getConfig(data) {
     $('#hbf_fire_cooling').val(config.fire.cooling);    
 		$('#hbf_fire_sparking').val(config.fire.sparking);
 			  
+		// Sparkle			  
+		$('#hbf_sparkle_fps').val(config.sparkle.fps);
+		$('#hbf_sparkle_cooling').val(config.sparkle.cooling);
+		$('#hbf_sparkle_twinkle').val(config.sparkle.twinkle);
+		$('#hbf_sparkle_flicker').val(config.sparkle.flicker);
+		$('#hbf_sparkle_bpm').val(config.sparkle.bpm);
+		$('#hbf_sparkle_hue').val(config.sparkle.hue);
+		
 
     // Output Config
     $('.odiv').addClass('hidden');
@@ -344,7 +352,8 @@ function getConfig(data) {
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
 				$('#o_noisematrix').removeClass('hidden');
-				$('#o_fire').removeClass('hidden');            
+				$('#o_fire').removeClass('hidden');
+				$('#o_sparkle').removeClass('hidden');                
         $('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
@@ -371,6 +380,7 @@ function getConfig(data) {
         $('#o_serial').removeClass('hidden');
         $('#o_noisematrix').removeClass('hidden');
 				$('#o_fire').removeClass('hidden');   
+				$('#o_sparkle').removeClass('hidden');
         $('#s_count').val(config.e131.channel_count);
         $('#s_proto').val(config.serial.type);
         $('#s_baud').val(config.serial.baudrate);
@@ -491,13 +501,18 @@ function submitConfig() {
             		'cooling': parseInt($('#hbf_fire_cooling').val()),            
                 'sparking': parseInt($('#hbf_fire_sparking').val())                
             },            
+            'sparkle': {
+						 		'fps': parseInt($('#hbf_sparkle_fps').val()),
+						 		'cooling': parseInt($('#hbf_sparkle_cooling').val()),
+						 		'twinkle': parseInt($('#hbf_sparkle_twinkle').val()),
+						 		'flicker': parseInt($('#hbf_sparkle_flicker').val()),
+						 		'bpm': parseInt($('#hbf_sparkle_bpm').val()),
+						 		'hue': parseInt($('#hbf_sparkle_hue').val())
+						},
             'hbf': {
             		'ultrasonic': $('#hbf_ultrasonic').prop('checked'),
             		'neopixel_mode': parseInt($('#hbf_neopixel_mode').val()),
-            		
-            		
             }
-            
         };
     ws.send('S2' + JSON.stringify(json));
     setColorOrder(parseInt($('#p_color').val()));

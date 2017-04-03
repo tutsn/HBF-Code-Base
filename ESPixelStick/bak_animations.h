@@ -51,9 +51,29 @@ uint8_t colorLoop = 1;
 
 // #################### Fire Configuration
 
-#define COOLING  55
-#define SPARKING 120
 bool gReverseDirection = false;
+
+
+// #################### Sparkle Configuration
+
+#define FRAMES_PER_SECOND  30
+#define COOLING            5         // controls how quickly LEDs dim
+#define TWINKLING          150       // controls how many new LEDs twinkle
+#define FLICKER            100        // controls how "flickery" each individual LED is
+
+
+static int beatInterval =  3000;     // the interval at which you want the strip to "sparkle"
+long nextBeat =            0;
+long nextTwinkle =         3000;     // twinkling doesn't start until after the sanity check delay
+unsigned int seeds =       0;
+long loops =               0;
+long deltaTimeTwinkle =    0;
+long deltaTimeSparkle =    0;
+boolean beatStarted =      false;
+
+static int heat[NUM_LEDS];
+
+
 
 
 // The leds
@@ -246,6 +266,131 @@ void Fire2012WithPalette(uint8_t cooling, uint8_t sparking)
 
 // ###########################################################################
 
+CHSV TwinkleColor( int temperature)
+{
+  CHSV heatcolor_twinkle;
+  heatcolor_twinkle.hue = 120;
+  heatcolor_twinkle.saturation = 255;
+  heatcolor_twinkle.value = temperature;
+  return heatcolor_twinkle;
+}
 
+// ###########################################################################
+
+ CRGB HeatColor_( uint8_t temperature)
+  {
+    CRGB heatcolor;
+
+  // Scale 'heat' down from 0-255 to 0-191,
+  // which can then be easily divided into three
+  // equal 'thirds' of 64 units each.
+  uint8_t t192 = scale8_video( temperature, 192);
+
+  // calculate a value that ramps up from
+  // zero to 255 in each 'third' of the scale.
+  uint8_t heatramp = t192 & 0x3F; // 0..63
+  heatramp <<= 2; // scale up to 0..252
+
+  // now figure out which third of the spectrum we're in:
+  if( t192 & 0x80) {
+  // we're in the hottest third
+  heatcolor.r = 255; // full red
+  heatcolor.g = 255; // full green
+  heatcolor.b = heatramp; // ramp up blue
+
+  } else if( t192 & 0x40 ) {
+  // we're in the middle third
+  heatcolor.r = 255; // full red
+  heatcolor.g = heatramp; // ramp up green
+  heatcolor.b = 0; // no blue
+
+  } else {
+  // we're in the coolest third
+  heatcolor.r = heatramp; // ramp up red
+  heatcolor.g = 0; // no green
+  heatcolor.b = 0; // no blue
+  }
+
+  return heatcolor;
+  }
+
+// ###########################################################################
+
+void Twinkle(uint16_t sparkle_fps, uint16_t sparkle_cooling, uint16_t sparkle_twinkle, uint16_t sparkle_flicker, uint16_t sparkle_bpm, uint16_t sparkle_hue)
+{
+  // Step 1. Create a randome number of seeds
+  // random16_add_entropy( random()); //random8() isn't very random, so this mixes things up a bit
+  seeds = random16(10, NUM_LEDS - 10);
+
+  // Step 2. "Cool" down every location on the strip a little
+  for ( int i = 0; i < NUM_LEDS; i++) {
+    heat[i] = qsub8( heat[i], sparkle_cooling);
+  }
+
+  // Step 3. Make the seeds into heat on the string
+  for ( int j = 0 ; j < seeds ; j++) {
+    if (random16() < sparkle_twinkle) {
+      //again, we have to mix things up so the same locations don't always light up
+      // random16_add_entropy( random());
+      heat[random16(NUM_LEDS)] = random16(50, 255);
+    }
+  }
+
+  // Step 4. Add some "flicker" to LEDs that are already lit
+  //         Note: this is most visible in dim LEDs
+  for ( int k = 0 ; k < NUM_LEDS ; k++ ) {
+    if (heat[k] > 0 && random8() < sparkle_flicker) {
+      heat[k] = qadd8(heat[k] , 10);
+    }
+  }
+
+  // Step 5. Map from heat cells to LED colors
+  for ( int j = 0; j < NUM_LEDS; j++)
+  {
+    leds[j] = HeatColor_( heat[j] );
+  }
+  nextTwinkle += 1000 / sparkle_fps ; // assign the next time Twinkle() should happen
+}
+
+// ###########################################################################
+
+// Sparkle works very much like Twinkle, but with more LEDs lighting up at once
+void Sparkle(uint16_t sparkle_bpm) {
+  // Step 1. Make a random numnber of seeds
+  seeds = random16(NUM_LEDS - 20 , NUM_LEDS);
+
+  // Step 2. Increase the heat at those locations
+  for ( int i = 0 ; i < seeds ; i++) {
+    {
+      int pos = random16(NUM_LEDS);
+      // random16_add_entropy( random());
+      heat[pos] = random8(50, 255);
+    }
+  }
+  nextBeat += (60000 / sparkle_bpm); // assign the next time Twinkle() should happen
+  loops++ ;
+}
+
+// ###########################################################################
+
+void getSparkle(uint16_t sparkle_fps, uint16_t sparkle_cooling, uint16_t sparkle_twinkle, uint16_t sparkle_flicker, uint16_t sparkle_bpm, uint16_t sparkle_hue)
+{
+    if (loops == 0 && beatStarted == false) {
+      nextBeat = millis();
+      beatStarted == true;
+      Sparkle(sparkle_bpm);
+    }
+    else {
+      long deltaTimeSparkle = millis() - nextBeat;
+      if ( deltaTimeSparkle > 0 ) Sparkle(sparkle_bpm); // if more time than
+    }
+  
+
+  deltaTimeTwinkle = millis() - nextTwinkle;
+  if ( deltaTimeTwinkle > 0 ) {
+    Twinkle(sparkle_fps, sparkle_cooling, sparkle_twinkle, sparkle_flicker, sparkle_bpm, sparkle_hue);
+  }
+
+}
 
 

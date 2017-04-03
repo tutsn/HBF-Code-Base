@@ -398,6 +398,14 @@ void dsDeviceConfig(JsonObject &json) {
     config.fire_cooling = json["fire"]["cooling"];
     config.fire_sparking = json["fire"]["sparking"];   
 
+    /* Sparkle */
+    config.sparkle_fps = json["sparkle"]["fps"];
+    config.sparkle_cooling = json["sparkle"]["cooling"];
+    config.sparkle_twinkle = json["sparkle"]["twinkle"]; 
+    config.sparkle_flicker = json["sparkle"]["flicker"];
+    config.sparkle_bpm = json["sparkle"]["bpm"];
+    config.sparkle_hue = json["sparkle"]["hue"];            
+
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
     config.pixel_type = PixelType(static_cast<uint8_t>(json["pixel"]["type"]));
@@ -520,7 +528,15 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     fire["fps"] = config.fire_fps;
     fire["cooling"] = config.fire_cooling;
     fire["sparking"] = config.fire_sparking;
-    
+
+    /* Sparkle */
+    JsonObject &sparkle = json.createNestedObject("sparkle");
+    sparkle["fps"] = config.sparkle_fps;
+    sparkle["cooling"] = config.sparkle_cooling;
+    sparkle["twinkle"] = config.sparkle_twinkle;
+    sparkle["flicker"] = config.sparkle_flicker;
+    sparkle["bpm"] = config.sparkle_bpm;
+    sparkle["hue"] = config.sparkle_hue;
 
     if (pretty)
         json.prettyPrintTo(jsonString);
@@ -688,12 +704,13 @@ case TestMode::FIRE:
 case TestMode::SPARKLE:
           //run noise matrix
           
-          if(millis() - testing.last > (1000 / config.matrix_fps)){
+          if(millis() - testing.last > (1000 / config.sparkle_fps)){
             //time for new step
             testing.last = millis();
 
           // call customized FastLed-routine and build a single frame
-          stairs_matrix(config.matrix_spp);
+          // getSparkle();
+          getSparkle(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver

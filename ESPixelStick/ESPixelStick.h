@@ -119,11 +119,19 @@ typedef struct {
     uint16_t    matrix_fps;
     uint16_t    matrix_spp;
 
-    /* NOISEMATRIX */
+    /* Fire */
     uint16_t    fire_fps;
     uint16_t    fire_cooling;
-    uint16_t    fire_sparking;     
+    uint16_t    fire_sparking; 
 
+    /*Sparkle */
+    uint16_t    sparkle_fps;
+    uint16_t    sparkle_cooling;
+    uint16_t    sparkle_twinkle;
+    uint16_t    sparkle_flicker;
+    uint16_t    sparkle_bpm;
+    uint16_t    sparkle_hue;
+    
 #if defined(ESPS_MODE_PIXEL)
     /* Pixels */
     PixelType   pixel_type;     /* Pixel type */

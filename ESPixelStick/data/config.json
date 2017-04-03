@@ -62,6 +62,14 @@
     "fps": 150,
     "cooling": 50,
     "sparking": 10
-  }  
+  },
+  "sparkle": {
+    "fps": 50,
+    "cooling": 15,
+    "twinkle": 120,
+    "flicker": 100,
+    "bpm": 150,
+    "hue": 0
+  }   
   
 }
