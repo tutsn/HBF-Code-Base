@@ -55,8 +55,11 @@ extern "C" {
 }
 
 uint8_t             *seqTracker;        /* Current sequence numbers for each Universe */
-uint32_t            lastUpdate;         /* Update timeout tracker */
-uint32_t           footStepTime;
+uint32_t             lastUpdate;         /* Update timeout tracker */
+uint32_t           footStepTime[] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t          footStepDists[] = {0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t            stairLinger[] = {0, 0, 0, 0, 0, 0, 0, 0};
+
 
 
 /* Forward Declarations */
@@ -149,7 +152,7 @@ void setup() {
     Wire.begin(4,5);
 
     //SonarStairs
-    footStepTime = millis();
+
 
     /* Configure the outputs */
 #if defined (ESPS_MODE_PIXEL)
@@ -685,7 +688,7 @@ void loop() {
         
         
         case TestMode::RAINBOW:
-          if(millis() - testing.last > 10){
+          if(millis() - testing.last > 100){
             float R = float(0.0196);
             float G = float(0.490196);
             float B = float(0.490196);
@@ -697,34 +700,49 @@ void loop() {
             int pixelsPerMeter = 60;
             int maxDist = 80;
             int pixelsLength = 60;
+            int nrStairs = 2;
 
             testing.last = millis();
 
-            Wire.requestFrom(8, 1);                         // request 6 bytes from slave device #8
+            Wire.requestFrom(8, 2);                         // request 6 bytes from slave device #8
             std::vector<int> dists;
             while (Wire.available()) {                      // slave may send less than requested
                 dists.push_back(Wire.read());               // receive a byte as character
-                LOG_PORT.println(dists.back());             // print the character
+                //LOG_PORT.print(dists.back());             // print the character
+                //LOG_PORT.print(" "); 
             }
+            LOG_PORT.println(dists[0]); 
             
-            for(int stNr = 0; stNr > dists.size(); stNr++){
+            // Wire.beginTransmission(8); // transmit to device #8
+            // Wire.write(5);              // sends one byte Smoothing term from web interface
+            // Wire.endTransmission();    // stop transmitting
 
-                if ((dist > 0) && (dist < maxDist) && (millis() - footStepTime > maxTime + cooldownTime)){
-                    footStepTime = millis();                // !! global variable !!
-                    testing.step = dist;
-                    LOG_PORT.println(dist);
+            for(int stNr = 0; stNr < nrStairs; stNr++){
+                if(dists.size() > stNr){
+                    if ((dists[stNr] > 0) && (dists[stNr] < maxDist)){
+                        stairLinger[stNr]++;                    // !! global variable !!     
+                    }
+                    else{
+                        stairLinger[stNr] = 0;
+                    }
+    
+                    if ((dists[stNr] > 0) && (dists[stNr] < maxDist) && stairLinger[stNr] == 1){
+                        footStepTime[stNr] = millis();                // !! global variable !!
+                        footStepDists[stNr] = dists[stNr];
+                    }
                 }
+                
+                if (millis() - footStepTime[stNr] < maxTime){
 
-                if (millis() - footStepTime < maxTime){
-
-                    float t = (millis() - footStepTime) / 1000.0;
+                    float t = (millis() - footStepTime[stNr]) / 1000.0;
                     float p = float((pixelsPerMeter / 100.0) * testing.step);
                       
                     for(int y = 0; y < pixelsLength; y++) {
+                      int ch_offset;
                         if ( stNr % 2 == 0)
-                            int ch_offset = (stNr * pixelsLength + y) * 3;
+                            ch_offset = (stNr * pixelsLength + y) * 3;
                         else
-                            int ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
+                            ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
                         
                         float x = (dissapationRate * t * float(y - p));
                         if (x == 0) x += 0.1;
@@ -738,10 +756,11 @@ void loop() {
                 else {
                     for (int y = 0 ; y < pixelsLength; y++)
                     {
+                        int ch_offset;
                         if ( stNr % 2 == 0)
-                            int ch_offset = (stNr * pixelsLength + y) * 3;
+                            ch_offset = (stNr * pixelsLength + y) * 3;
                         else
-                            int ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
+                            ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
 
                         float gain = 255 * (sin(2 * M_PI * oscillationRate * (millis() / 1000.0)) * sin(waveDensity * y) + 1) / 2.0;
                         pixels.setValue(ch_offset++, gain * R);
