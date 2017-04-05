@@ -29,6 +29,8 @@
 // include additional testing animations for fallback/backup purposes
 #include "bak_animations.h"
 
+#include "fire.h"
+
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
 
@@ -165,6 +167,12 @@ SerialDriver    serial;         /* Serial object */
 #else
 #error "No valid output mode defined."
 #endif
+
+
+// Instanz von Fire
+    Fire backup_fire;
+
+
 
 /* Forward Declarations */
 void serializeConfig(String &jsonString, bool pretty = false, bool creds = false);

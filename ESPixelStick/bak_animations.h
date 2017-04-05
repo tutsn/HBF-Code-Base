@@ -77,6 +77,7 @@ static int heat[NUM_LEDS];
 
 
 // The leds
+
 CRGB leds[kMatrixWidth * kMatrixHeight];
 
 // functions

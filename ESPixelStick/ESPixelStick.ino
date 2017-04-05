@@ -49,6 +49,8 @@ const char passphrase[] = "ENTER_PASSPHRASE_HERE";
 #include "wshandler.h"
 
 
+
+
 extern "C" {
 #include <user_interface.h>
 }
@@ -155,6 +157,9 @@ void setup() {
 // setup the FastLed fallback animations when in WS2812 mode
     fastled_setup(config.channel_count / 3);
     stairs_matrix_setup();
+
+
+    backup_fire.setupFire(50, config.fire_cooling , config.fire_sparking, false);
 
 
 
@@ -624,7 +629,6 @@ void loop() {
       switch(config.testmode){
 
         case TestMode::NOISEMATRIX:
-          //run noise matrix
           
           if(millis() - testing.last > (1000 / config.matrix_fps)){
             //time for new step
@@ -670,19 +674,31 @@ case TestMode::FIRE:
             testing.last = millis();
 
           // call customized FastLed-routine and build a single frame
-          Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
+          
+          //Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
+          backup_fire.goFire();
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
             // NUM_LEDS comes from FastLed-routine btw.
 
             // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < NUM_LEDS ; i++)
+            for (int i = 0 ; i < backup_fire.num_leds ; i++)
             {
               int ch_offset = i*3;
-              pixels.setValue(ch_offset++, leds[i].r);
-              pixels.setValue(ch_offset++, leds[i].g);
-              pixels.setValue(ch_offset, leds[i].b);
+              pixels.setValue(ch_offset++, backup_fire.leds[i].r);
+              pixels.setValue(ch_offset++, backup_fire.leds[i].g);
+              pixels.setValue(ch_offset, backup_fire.leds[i].b);
+/*
+              LOG_PORT.print(i);
+              LOG_PORT.print(" ::: ");
+              LOG_PORT.print(backup_fire.leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(backup_fire.leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(backup_fire.leds[i].b);
+              LOG_PORT.println(" - ");
+*/              
             }
         
         #elif defined(ESPS_MODE_SERIAL)
