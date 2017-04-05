@@ -74,6 +74,9 @@ const char LOOKUP_2811[4] = {
 #define GECE_TFRAME     790L    /* 790us frame time */
 #define GECE_TIDLE      35L     /* 35us idle time */
 
+#define LOG_PORT        Serial  /* Serial port for console logging */
+
+
 /* Pixel Types */
 enum class PixelType : uint8_t {
     WS2811,
@@ -90,6 +93,12 @@ enum class PixelColor : uint8_t {
     BGR
 };
 
+typedef struct {
+    unsigned long footStepTime;                  // Holds the time of the last footstep
+    int footStepDist;                  // Holds the distance of the last footstep
+    int stairLinger;                   // Holds the number of cycles the presence of a footstep is detected
+} stepData_t;
+
 class PixelDriver {
  public:
     int begin();
@@ -99,6 +108,7 @@ class PixelDriver {
     void setGamma(bool gamma);
     void updateOrder(PixelColor color);
     void show();
+    void readSonar();
     uint8_t* getData();
 
     /* Set channel value at address */
@@ -122,9 +132,12 @@ class PixelDriver {
     uint16_t    szBuffer;       // Size of Pixel buffer
     uint32_t    startTime;      // When the last frame TX started
     uint32_t    refreshTime;    // Time until we can refresh after starting a TX
+    uint32_t    numStairs;      // Number of stairs with pixels and sonar
+    uint32_t    stepLength = 80;// Length of step in cm  
     static uint8_t    rOffset;  // Index of red byte
     static uint8_t    gOffset;  // Index of green byte
     static uint8_t    bOffset;  // Index of blue byte
+    std::vector<stepData_t>     stepData;    // Sonar readings data of a foot step on a step        
 
     void ws2811_init();
     void gece_init();

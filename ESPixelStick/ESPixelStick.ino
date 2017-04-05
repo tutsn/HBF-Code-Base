@@ -49,7 +49,6 @@ const char passphrase[] = "strangersrest123";
 #include "wshandler.h"
 #include <Wire.h>
 
-
 extern "C" {
 #include <user_interface.h>
 }
@@ -689,9 +688,9 @@ void loop() {
         
         case TestMode::RAINBOW:
           if(millis() - testing.last > 100){
-            float R = float(0.0196);
-            float G = float(0.490196);
-            float B = float(0.490196);
+            float R = float(0.0196);  // 5 / 255
+            float G = float(0.490196); // 115 / 255
+            float B = float(0.490196); // 115 / 255
             int maxTime = 5000;
             int cooldownTime = 5000;
             float dissapationRate = 0.1;
@@ -738,7 +737,7 @@ void loop() {
                     float p = float((pixelsPerMeter / 100.0) * testing.step);
                       
                     for(int y = 0; y < pixelsLength; y++) {
-                      int ch_offset;
+                        int ch_offset;
                         if ( stNr % 2 == 0)
                             ch_offset = (stNr * pixelsLength + y) * 3;
                         else
@@ -746,11 +745,11 @@ void loop() {
                         
                         float x = (dissapationRate * t * float(y - p));
                         if (x == 0) x += 0.1;
-                        float gain = 255 * (sin(2 * M_PI * oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
+                        float gain = (sin(2 * M_PI * oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
             
-                        pixels.setValue(ch_offset++, gain * R);
-                        pixels.setValue(ch_offset++, gain * G);
-                        pixels.setValue(ch_offset, gain * B);                    
+                        pixels.setValue(ch_offset++, 255 * gain * R); 
+                        pixels.setValue(ch_offset++, 255 * gain * G);
+                        pixels.setValue(ch_offset, 255 * gain * B);                    
                     }
                 }
                 else {
@@ -762,10 +761,10 @@ void loop() {
                         else
                             ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
 
-                        float gain = 255 * (sin(2 * M_PI * oscillationRate * (millis() / 1000.0)) * sin(waveDensity * y) + 1) / 2.0;
-                        pixels.setValue(ch_offset++, gain * R);
-                        pixels.setValue(ch_offset++, gain * G);
-                        pixels.setValue(ch_offset, gain * B);
+                        float gain = (sin(2 * M_PI * oscillationRate * (millis() / 1000.0)) * sin(waveDensity * y) + 1) / 2.0;
+                        pixels.setValue(ch_offset++, 255 * gain * R);
+                        pixels.setValue(ch_offset++, 255 * gain * G);
+                        pixels.setValue(ch_offset, 255 * gain * B);
                     }
                 }
             }

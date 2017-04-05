@@ -22,6 +22,7 @@
 #include <algorithm>
 #include "PixelDriver.h"
 #include "bitbang.h"
+#include <Wire.h>
 
 extern "C" {
 #include <eagle_soc.h>
@@ -143,6 +144,9 @@ void PixelDriver::gece_init() {
     Serial1.end();
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
+
+    /* Setup serial log port */
+    LOG_PORT.begin(115200);
 }
 
 void PixelDriver::updateOrder(PixelColor color) {
@@ -257,6 +261,17 @@ const uint8_t* ICACHE_RAM_ATTR PixelDriver::fillWS2811(const uint8_t *buff,
 void PixelDriver::show() {
     if (!pixdata) return;
 
+    readSonar();
+
+    // uint32_t stepPos = 0;
+
+    // if(millis() - testing.last > 100){
+    // }
+
+
+    // void PixelDriver::readSonar(&stepPos);
+
+
     if (type == PixelType::WS2811) {
         uart_buffer = pixdata;
         uart_buffer_tail = pixdata + szBuffer;
@@ -289,3 +304,80 @@ void PixelDriver::show() {
 uint8_t* PixelDriver::getData() {
     return pixdata;
 }
+
+void PixelDriver::readSonar(){
+    Wire.requestFrom(8, numStairs);                 // request numStairs bytes from slave device #8
+    std::vector<int> dists;
+    while (Wire.available()) {                      // slave may send less than requested
+        dists.push_back(Wire.read());               // receive a byte as character
+        //LOG_PORT.print(dists.back());             // print the character
+        //LOG_PORT.print(" "); 
+    }
+
+    if(stepData.size() == 0){
+        for(int stNr = 0; stNr < numStairs; stNr++){
+            stepData.push_back(stepData_t());
+        }
+    }
+
+    if(numStairs == dists.size()){
+        LOG_PORT.println(dists[0]); 
+        for(int stNr = 0; stNr < numStairs; stNr++){
+            if ((dists[stNr] > 0) && (dists[stNr] < stepLength)){
+                stepData[stNr].stairLinger++;  
+            } else{
+                stepData[stNr].stairLinger = 0;
+            }
+
+            if ((dists[stNr] > 0) && (dists[stNr] < stepLength) && stepData[stNr].stairLinger == 1){
+                stepData[stNr].footStepTime = millis();
+                stepData[stNr].footStepDist = dists[stNr];
+            }
+        } 
+    } else {
+        LOG_PORT.println("Missing sensor data..");
+    }
+}
+
+// void PixelDriver::water(){
+
+//     for(int stNr = 0; stNr < numStairs; stNr++){
+
+//         if (millis() - stepData[stNr].footStepTime < maxTime){
+
+//             float t = (millis() - stepData[stNr].footStepTime) / 1000.0;
+//             float p = float((pixelsPerMeter / 100.0) * testing.step);
+              
+//             for(int y = 0; y < pixelsLength; y++) {
+//                 int ch_offset;
+//                 if ( stNr % 2 == 0)
+//                     ch_offset = (stNr * pixelsLength + y) * 3;
+//                 else
+//                     ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
+                
+//                 float x = (dissapationRate * t * float(y - p));
+//                 if (x == 0) x += 0.1;
+//                 float gain = (sin(2 * M_PI * oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
+    
+//                 pixels.setValue(ch_offset++, 255 * gain * R); 
+//                 pixels.setValue(ch_offset++, 255 * gain * G);
+//                 pixels.setValue(ch_offset, 255 * gain * B);                    
+//             }
+//         }
+//         else {
+//             for (int y = 0 ; y < pixelsLength; y++)
+//             {
+//                 int ch_offset;
+//                 if ( stNr % 2 == 0)
+//                     ch_offset = (stNr * pixelsLength + y) * 3;
+//                 else
+//                     ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
+
+//                 float gain = (sin(2 * M_PI * oscillationRate * (millis() / 1000.0)) * sin(waveDensity * y) + 1) / 2.0;
+//                 pixels.setValue(ch_offset++, 255 * gain * R);
+//                 pixels.setValue(ch_offset++, 255 * gain * G);
+//                 pixels.setValue(ch_offset, 255 * gain * B);
+//             }
+//         }
+//     }
+// }
