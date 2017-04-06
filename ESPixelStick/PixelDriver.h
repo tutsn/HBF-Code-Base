@@ -75,6 +75,7 @@ const char LOOKUP_2811[4] = {
 #define GECE_TIDLE      35L     /* 35us idle time */
 
 #define LOG_PORT        Serial  /* Serial port for console logging */
+#define M_PI            3.14159265358979323846  /* pi */
 
 
 /* Pixel Types */
@@ -95,9 +96,23 @@ enum class PixelColor : uint8_t {
 
 typedef struct {
     unsigned long footStepTime;                  // Holds the time of the last footstep
-    int footStepDist;                  // Holds the distance of the last footstep
+    int footStepDist;                  // Holds the distance of the last footstep in cm
     int stairLinger;                   // Holds the number of cycles the presence of a footstep is detected
 } stepData_t;
+
+typedef struct {
+    int numStairs;                     // Number of stairs with pixels and sonar 
+    int stepLength;                     // Length of step in cm 
+    int numPixels;                                  // Number of pixels per step
+    int triggerDist;                            // In cm
+} stairPixelData_t;
+
+typedef struct {
+    float dissapationRate;                      // Animation dissapation rate
+    float oscillationRate;                  // Annimation oscillation rate
+    float waveDensity;                      // Period of the sin wave
+    unsigned long maxTime;                    // Animation length in ms
+} waterAnimation_t;
 
 class PixelDriver {
  public:
@@ -109,12 +124,21 @@ class PixelDriver {
     void updateOrder(PixelColor color);
     void show();
     void readSonar();
+    void setStairPixelGains(int stairNum, std::vector<float> gainArray);
+    void waterStairs();
     uint8_t* getData();
 
     /* Set channel value at address */
     inline void setValue(uint16_t address, uint8_t value) {
         pixdata[address] = value;
     }
+
+    inline void gainValue(uint16_t address, float gain) {
+        // pixdata[address] = (pixdata[address] / 255) * gain * 255;
+        pixdata[address] = (100.0 / 255.0) * gain * 255.0;
+    }
+
+
 
     /* Drop the update if our refresh rate is too high */
     inline bool canRefresh() {
@@ -132,12 +156,12 @@ class PixelDriver {
     uint16_t    szBuffer;       // Size of Pixel buffer
     uint32_t    startTime;      // When the last frame TX started
     uint32_t    refreshTime;    // Time until we can refresh after starting a TX
-    uint32_t    numStairs;      // Number of stairs with pixels and sonar
-    uint32_t    stepLength = 80;// Length of step in cm  
     static uint8_t    rOffset;  // Index of red byte
     static uint8_t    gOffset;  // Index of green byte
     static uint8_t    bOffset;  // Index of blue byte
-    std::vector<stepData_t>     stepData;    // Sonar readings data of a foot step on a step        
+    std::vector<stepData_t>     stepData;    // Sonar readings data of a foot step on a step  
+    stairPixelData_t     stairPixelData = {2, 100, 60, 80};     
+    waterAnimation_t     waterAnimation = {0.1, 1, 1, 5000};
 
     void ws2811_init();
     void gece_init();
