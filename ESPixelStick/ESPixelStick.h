@@ -29,7 +29,9 @@
 // include additional testing animations for fallback/backup purposes
 #include "bak_animations.h"
 
+#include "sparkle.h"
 #include "fire.h"
+
 
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
@@ -169,8 +171,20 @@ SerialDriver    serial;         /* Serial object */
 #endif
 
 
+
+
 // Instanz von Fire
-    Fire backup_fire;
+Fire backup_fire_1;
+Fire backup_fire_2;
+Fire backup_fire_3;
+Fire backup_fire_4;
+Fire backup_fire_5;
+Fire backup_fire_6;
+
+// INstanz von Sparkle
+Sparkle backup_sparkle_1;
+
+
 
 
 

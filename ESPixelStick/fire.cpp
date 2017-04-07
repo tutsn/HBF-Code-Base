@@ -14,20 +14,16 @@ void Fire::setupFire(uint16_t conf_numberof_leds, uint8_t conf_cooling, uint8_t 
   this->heat = (byte *) malloc(conf_numberof_leds * sizeof(byte));
   this->leds = (CRGB *) malloc(conf_numberof_leds * sizeof(CRGB));
 
-  if(this->heat != NULL) {
-    LOG_PORT.print("heat Speicher ist reserviert");
-  }else {
-    LOG_PORT.print("heat Kein freier Speicher vorhanden.");
-  }
-
-  if(this->leds != NULL) {
-    LOG_PORT.print("leds Speicher ist reserviert");
-  }else {
-    LOG_PORT.print("leds Kein freier Speicher vorhanden.");
-  }  
-
   LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds); 
-  CRGBPalette16 currentPalette( HeatColors_p ); 
+  this->currentPalette = HeatColors_p; 
+}
+
+void Fire::updateConfig(uint8_t conf_cooling, uint8_t conf_sparking, bool conf_gReverseDirection)
+{
+  this->cooling = conf_cooling;
+  this->sparking = conf_sparking;
+  // this->num_leds = conf_numberof_leds; // updating this without restart means freeing memory and malloc again...
+  this->gReverseDirection = conf_gReverseDirection;  
 }
 
 
@@ -66,12 +62,6 @@ void Fire::goFire()
         pixelnumber = j;
       }
       this->leds[pixelnumber] = color;
-       LOG_PORT.print(colorindex);
-       LOG_PORT.print("-");
-
     }
-     LOG_PORT.println(" - ");
-  
 }
-
 

@@ -159,7 +159,13 @@ void setup() {
     stairs_matrix_setup();
 
 
-    backup_fire.setupFire(50, config.fire_cooling , config.fire_sparking, false);
+    backup_fire_1.setupFire(50, config.fire_cooling , config.fire_sparking, true);
+    backup_fire_2.setupFire(50, config.fire_cooling , config.fire_sparking, false);
+    backup_fire_3.setupFire(50, config.fire_cooling , config.fire_sparking, true);
+    backup_fire_4.setupFire(50, config.fire_cooling , config.fire_sparking, false);
+    backup_fire_5.setupFire(50, config.fire_cooling , config.fire_sparking, true);
+    backup_fire_6.setupFire(50, config.fire_cooling , config.fire_sparking, false);
+    backup_sparkle_1.setupSparkle(50, config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
 
 
 
@@ -350,6 +356,9 @@ void updateConfig() {
     LOG_PORT.print(config.universe);
     LOG_PORT.print(F(" to "));
     LOG_PORT.println(uniLast);
+
+    backup_fire_1.updateConfig(config.fire_cooling, config.fire_sparking, false);
+    backup_sparkle_1.updateConfig(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
 }
 
 /* De-Serialize Network config */
@@ -676,30 +685,62 @@ case TestMode::FIRE:
           // call customized FastLed-routine and build a single frame
           
           //Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
-          backup_fire.goFire();
+          backup_fire_1.goFire();
+          backup_fire_2.goFire();
+          backup_fire_3.goFire();
+          backup_fire_4.goFire();
+          backup_fire_5.goFire();
+          backup_fire_6.goFire();
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
             // NUM_LEDS comes from FastLed-routine btw.
 
             // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < backup_fire.num_leds ; i++)
+            for (int i = 0 ; i < backup_fire_1.num_leds ; i++)
             {
               int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire.leds[i].r);
-              pixels.setValue(ch_offset++, backup_fire.leds[i].g);
-              pixels.setValue(ch_offset, backup_fire.leds[i].b);
-/*
-              LOG_PORT.print(i);
-              LOG_PORT.print(" ::: ");
-              LOG_PORT.print(backup_fire.leds[i].r);
-              LOG_PORT.print(" : ");
-              LOG_PORT.print(backup_fire.leds[i].g);
-              LOG_PORT.print(" : ");
-              LOG_PORT.print(backup_fire.leds[i].b);
-              LOG_PORT.println(" - ");
-*/              
+              pixels.setValue(ch_offset++, backup_fire_1.leds[i].r);
+              pixels.setValue(ch_offset++, backup_fire_1.leds[i].g);
+              pixels.setValue(ch_offset, backup_fire_1.leds[i].b);  
             }
+            for (int i = 50 ; i < 50 + backup_fire_2.num_leds ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire_2.leds[i - 50].r);
+              pixels.setValue(ch_offset++, backup_fire_2.leds[i - 50].g);
+              pixels.setValue(ch_offset, backup_fire_2.leds[i - 50].b); 
+            }
+            for (int i = 100 ; i < 100 + backup_fire_3.num_leds ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire_3.leds[i - 100].r);
+              pixels.setValue(ch_offset++, backup_fire_3.leds[i - 100].g);
+              pixels.setValue(ch_offset, backup_fire_3.leds[i -100].b); 
+            }
+            for (int i = 150 ; i < 150 + backup_fire_4.num_leds ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire_4.leds[i - 150].r);
+              pixels.setValue(ch_offset++, backup_fire_4.leds[i - 150].g);
+              pixels.setValue(ch_offset, backup_fire_4.leds[i -150].b); 
+            }
+            for (int i = 200 ; i < 200 + backup_fire_5.num_leds ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire_5.leds[i - 200].r);
+              pixels.setValue(ch_offset++, backup_fire_5.leds[i - 200].g);
+              pixels.setValue(ch_offset, backup_fire_5.leds[i - 200].b);                                                                   
+            }
+            for (int i = 250 ; i < 250 + backup_fire_6.num_leds ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire_6.leds[i - 250].r);
+              pixels.setValue(ch_offset++, backup_fire_6.leds[i - 250].g);
+              pixels.setValue(ch_offset, backup_fire_6.leds[i - 250].b);                                                                   
+            }            
+
+                        
         
         #elif defined(ESPS_MODE_SERIAL)
             
@@ -726,19 +767,20 @@ case TestMode::SPARKLE:
 
           // call customized FastLed-routine and build a single frame
           // getSparkle();
-          getSparkle(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+//          getSparkle(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+          backup_sparkle_1.goSparkle();
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
             // NUM_LEDS comes from FastLed-routine btw.
 
             // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < NUM_LEDS ; i++)
+            for (int i = 0 ; i < backup_sparkle_1.num_leds ; i++)
             {
               int ch_offset = i*3;
-              pixels.setValue(ch_offset++, leds[i].r);
-              pixels.setValue(ch_offset++, leds[i].g);
-              pixels.setValue(ch_offset, leds[i].b);
+              pixels.setValue(ch_offset++, backup_sparkle_1.leds[i].r);
+              pixels.setValue(ch_offset++, backup_sparkle_1.leds[i].g);
+              pixels.setValue(ch_offset, backup_sparkle_1.leds[i].b);
             }
         
         #elif defined(ESPS_MODE_SERIAL)

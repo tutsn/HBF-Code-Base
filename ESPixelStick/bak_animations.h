@@ -265,6 +265,7 @@ void Fire2012WithPalette(uint8_t cooling, uint8_t sparking)
     }
 }
 
+/*
 // ###########################################################################
 
 CHSV TwinkleColor( int temperature)
@@ -394,4 +395,4 @@ void getSparkle(uint16_t sparkle_fps, uint16_t sparkle_cooling, uint16_t sparkle
 
 }
 
-
+*/
