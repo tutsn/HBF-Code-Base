@@ -159,14 +159,22 @@ void setup() {
     stairs_matrix_setup();
 
 
-    backup_fire_1.setupFire(50, config.fire_cooling , config.fire_sparking, true);
-    backup_fire_2.setupFire(50, config.fire_cooling , config.fire_sparking, false);
-    backup_fire_3.setupFire(50, config.fire_cooling , config.fire_sparking, true);
-    backup_fire_4.setupFire(50, config.fire_cooling , config.fire_sparking, false);
-    backup_fire_5.setupFire(50, config.fire_cooling , config.fire_sparking, true);
-    backup_fire_6.setupFire(50, config.fire_cooling , config.fire_sparking, false);
-    backup_sparkle_1.setupSparkle(50, config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+    backup_fire_1.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_1.setEnvironment(50, 0, true);    
+    backup_fire_2.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_2.setEnvironment(50, 50, false);
+    backup_fire_3.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_3.setEnvironment(50, 100, true);
+    backup_fire_4.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_4.setEnvironment(50, 150, false);
+    backup_fire_5.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_5.setEnvironment(50, 200, true);
+    backup_fire_6.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire_6.setEnvironment(50, 250, false);
+    backup_sparkle_1.setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+    backup_sparkle_1.setEnvironment(50, 0, true);
 
+    
 
 
     // set D3 to OUTPUT LOW to open the LLS and show status led 
@@ -343,6 +351,7 @@ void updateConfig() {
     /* Zero out packet stats */
     e131.stats.num_packets = 0;
 
+
     /* Initialize for our pixel type */
 #if defined(ESPS_MODE_PIXEL)
     pixels.begin(config.pixel_type, config.pixel_color, config.channel_count / 3);
@@ -395,11 +404,16 @@ void dsDeviceConfig(JsonObject &json) {
     config.multicast = json["e131"]["multicast"];
 
     /* HBF */
-    /* Neopixel Modes */
-    config.neopixel_mode = NeopixelMode(static_cast<uint8_t>(json["hbf"]["neopixel_mode"]));
-    
-    /* Fetch Ultrasonic */
+     /* Fetch Ultrasonic */
     config.ultrasonic = json["hbf"]["ultrasonic"];
+
+    /* Fallback Mode */
+    for (int i = 0; i < 16; i++) {
+        config.fb_mode[i] = json["fallback"]["fb_mode"][i];
+        config.fb_numleds[i] = json["fallback"]["fb_numleds"][i];
+        config.fb_offset[i] = json["fallback"]["fb_offset"][i];
+        config.fb_reverse[i] = json["fallback"]["fb_reverse"][i];
+    }
 
     /* NOISEMATRIX */
     config.matrix_xdim = json["noisematrix"]["xdim"];
@@ -523,12 +537,21 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
 
     /* HBF */
     JsonObject &hbf = json.createNestedObject("hbf");
-
-    /* Neopixel Modes */
-    hbf["neopixel_mode"] = static_cast<uint8_t>(config.neopixel_mode);
-
     /* Fetch Ultrasonic */
     hbf["ultrasonic"] = config.ultrasonic;
+
+    /* Fallback Mode */
+    JsonObject &fallback = json.createNestedObject("fallback");
+    JsonArray &fb_mode = fallback.createNestedArray("fb_mode");
+    JsonArray &fb_numleds = fallback.createNestedArray("fb_numleds");
+    JsonArray &fb_offset = fallback.createNestedArray("fb_offset");
+    JsonArray &fb_reverse = fallback.createNestedArray("fb_reverse");
+    for (int i = 0; i < 16; i++) {
+        fb_mode.add(config.fb_mode[i]);
+        fb_numleds.add(config.fb_numleds[i]);
+        fb_offset.add(config.fb_offset[i]);
+        fb_reverse.add(config.fb_reverse[i]);
+    }
     
     /* NOISEMATRIX */
     JsonObject &noisematrix = json.createNestedObject("noisematrix");
@@ -685,12 +708,12 @@ case TestMode::FIRE:
           // call customized FastLed-routine and build a single frame
           
           //Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
-          backup_fire_1.goFire();
-          backup_fire_2.goFire();
-          backup_fire_3.goFire();
-          backup_fire_4.goFire();
-          backup_fire_5.goFire();
-          backup_fire_6.goFire();
+          backup_fire_1.getFrame();
+          backup_fire_2.getFrame();
+          backup_fire_3.getFrame();
+          backup_fire_4.getFrame();
+          backup_fire_5.getFrame();
+          backup_fire_6.getFrame();
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
@@ -768,7 +791,7 @@ case TestMode::SPARKLE:
           // call customized FastLed-routine and build a single frame
           // getSparkle();
 //          getSparkle(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
-          backup_sparkle_1.goSparkle();
+          backup_sparkle_1.getFrame();
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver

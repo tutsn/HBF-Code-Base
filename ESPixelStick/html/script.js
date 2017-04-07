@@ -320,8 +320,27 @@ function getConfig(data) {
     $('#multicast').prop('checked', config.e131.multicast);
 
 		// HBF Config
-		// Neopixel Mode
-		$('#hbf_neopixel_mode').val(config.hbf.neopixel_mode);    		
+		// Fallback Mode
+		$('#hbf_fb_mode_1').val(config.fallback.fb_mode[0]);
+		$('#hbf_fb_numleds_1').val(config.fallback.fb_numleds[0]);   
+		$('#hbf_fb_offset_1').val(config.fallback.fb_offset[0]);   
+		$('#hbf_fb_reverse_1').prop('checked', config.fallback.fb_reverse[0]);
+		
+		$('#hbf_fb_mode_2').val(config.fallback.fb_mode[1]);
+		$('#hbf_fb_numleds_2').val(config.fallback.fb_numleds[1]);   
+		$('#hbf_fb_offset_2').val(config.fallback.fb_offset[1]);   
+		$('#hbf_fb_reverse_2').prop('checked', config.fallback.fb_reverse[1]);
+		
+		$('#hbf_fb_mode_3').val(config.fallback.fb_mode[2]);
+		$('#hbf_fb_numleds_3').val(config.fallback.fb_numleds[2]);   
+		$('#hbf_fb_offset_3').val(config.fallback.fb_offset[2]);   
+		$('#hbf_fb_reverse_3').prop('checked', config.fallback.fb_reverse[2]);
+		
+		$('#hbf_fb_mode_4').val(config.fallback.fb_mode[3]);
+		$('#hbf_fb_numleds_4').val(config.fallback.fb_numleds[3]);   
+		$('#hbf_fb_offset_4').val(config.fallback.fb_offset[3]);   
+		$('#hbf_fb_reverse_4').prop('checked', config.fallback.fb_reverse[3]); 						      
+				
 		
 		// fetch ultrasonic sensors
 		$('#hbf_ultrasonic').prop('checked', config.hbf.ultrasonic);
@@ -353,7 +372,8 @@ function getConfig(data) {
         $('#o_pixel').removeClass('hidden');
 				$('#o_noisematrix').removeClass('hidden');
 				$('#o_fire').removeClass('hidden');
-				$('#o_sparkle').removeClass('hidden');                
+				$('#o_sparkle').removeClass('hidden');      
+				$('#o_fallback').removeClass('hidden');				          
         $('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
@@ -381,6 +401,7 @@ function getConfig(data) {
         $('#o_noisematrix').removeClass('hidden');
 				$('#o_fire').removeClass('hidden');   
 				$('#o_sparkle').removeClass('hidden');
+				$('#o_fallback').removeClass('hidden');				
         $('#s_count').val(config.e131.channel_count);
         $('#s_proto').val(config.serial.type);
         $('#s_baud').val(config.serial.baudrate);
@@ -510,9 +531,15 @@ function submitConfig() {
 						 		'hue': parseInt($('#hbf_sparkle_hue').val())
 						},
             'hbf': {
-            		'ultrasonic': $('#hbf_ultrasonic').prop('checked'),
-            		'neopixel_mode': parseInt($('#hbf_neopixel_mode').val()),
-            }
+            		'ultrasonic': $('#hbf_ultrasonic').prop('checked')            		
+            },
+            'fallback': {
+            		'fb_mode': [parseInt($('#hbf_fb_mode_1').val()), parseInt($('#hbf_fb_mode_2').val()), parseInt($('#hbf_fb_mode_3').val()), parseInt($('#hbf_fb_mode_4').val())],
+            		'fb_numleds': [parseInt($('#hbf_fb_numleds_1').val()), parseInt($('#hbf_fb_numleds_2').val()), parseInt($('#hbf_fb_numleds_3').val()), parseInt($('#hbf_fb_numleds_4').val())],
+            		'fb_offset': [parseInt($('#hbf_fb_offset_1').val()), parseInt($('#hbf_fb_offset_2').val()),parseInt($('#hbf_fb_offset_3').val()),parseInt($('#hbf_fb_offset_4').val())],
+            		'fb_reverse': [$('#hbf_fb_reverse_1').prop('checked'), $('#hbf_fb_reverse_2').prop('checked'), $('#hbf_fb_reverse_3').prop('checked'), $('#hbf_fb_reverse_4').prop('checked')]					
+						}
+            
         };
     ws.send('S2' + JSON.stringify(json));
     setColorOrder(parseInt($('#p_color').val()));
@@ -573,7 +600,10 @@ function test() {
 		}		
 		else if (!tmode.localeCompare('t_sparkle')) {
         ws.send('T7');				        
-    }    
+    }  
+		else if (!tmode.localeCompare('t_fallback')) {
+        ws.send('T8');				        
+    } 		  
     else if (!tmode.localeCompare('t_view')) {
         ws.send('T4');
     }

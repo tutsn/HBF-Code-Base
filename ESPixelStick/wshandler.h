@@ -99,11 +99,30 @@ void procE(uint8_t *data, AsyncWebSocketClient *client) {
             s_baud["250000"] = static_cast<uint32_t>(BaudRate::BR_250000);
             s_baud["460800"] = static_cast<uint32_t>(BaudRate::BR_460800);
 #endif
-            // Neopixel Modes
-            JsonObject &hbf_neopixel_mode = json.createNestedObject("hbf_neopixel_mode");
-            hbf_neopixel_mode["Horizontal"] = static_cast<uint8_t>(NeopixelMode::Horizontal);
-            hbf_neopixel_mode["Vertical"] = static_cast<uint8_t>(NeopixelMode::Vertical);
-            hbf_neopixel_mode["Stairs"] = static_cast<uint8_t>(NeopixelMode::Stairs);
+            // Fallback Modes
+            JsonObject &hbf_fb_mode_1 = json.createNestedObject("hbf_fb_mode_1");
+            hbf_fb_mode_1["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_1["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_1["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_1["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_2 = json.createNestedObject("hbf_fb_mode_2");
+            hbf_fb_mode_2["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_2["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_2["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_2["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_3 = json.createNestedObject("hbf_fb_mode_3");
+            hbf_fb_mode_3["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_3["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_3["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_3["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_4 = json.createNestedObject("hbf_fb_mode_4");
+            hbf_fb_mode_4["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_4["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_4["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_4["Other"] = static_cast<uint8_t>(NeopixelMode::Other);                                    
 
             String response;
             json.printTo(response);

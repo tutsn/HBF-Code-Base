@@ -60,9 +60,10 @@ const char CONFIG_FILE[] = "/config.json";
 
 /* Neopixel Modes */
 enum class NeopixelMode : uint8_t {
-    Horizontal,
-    Vertical,
-    Stairs
+    deactivated,
+    Fire,
+    Sparkle,
+    Other
 };
 
 /* Pixel Types */
@@ -117,6 +118,12 @@ typedef struct {
     bool        ultrasonic;
     NeopixelMode  neopixel_mode;
 
+    /* Fallback Modes */
+    uint8_t     fb_mode[16];
+    uint16_t    fb_numleds[16];
+    uint16_t    fb_offset[16];
+    bool        fb_reverse[16];
+
     /* NOISEMATRIX */
     uint16_t    matrix_xdim;
     uint16_t    matrix_ydim;
@@ -170,7 +177,7 @@ SerialDriver    serial;         /* Serial object */
 #error "No valid output mode defined."
 #endif
 
-
+/* Instanzen der Backupanimationen erzeugen */
 
 
 // Instanz von Fire
@@ -183,6 +190,7 @@ Fire backup_fire_6;
 
 // INstanz von Sparkle
 Sparkle backup_sparkle_1;
+
 
 
 

@@ -27,6 +27,7 @@
           <li><a href="#wifi">Wireless Setup</a></li>
           <li><a href="#config">Device Setup</a></li>
           <li><a href="#hbf">HBF Setup</a></li>
+          <li><a href="#fallback">Fallback Setup</a></li>
           <li><a href="#test">Testing</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -192,43 +193,27 @@
     </div>
 
 
-
-
-
-
-
-
     <!-- HBF Configuration -->
     <div id="hbf" class="mdiv hidden anchor">
       <fieldset>
         <legend class="esps-legend">HBF Configuration</legend>
         <form class="form-horizontal">
-                     
-
-
           <div class="form-group">
             <label class="control-label col-sm-2" for="hbf_neopixel_mode">Neopixel Mode</label>
             <div class="col-sm-10">
               <select class="form-control" id="hbf_neopixel_mode" name="hbf_neopixel_mode"></select>
             </div>
           </div>
-
-
-
           <div class="form-group">
             <label class="control-label col-sm-2" for="t_mode">Fetch Ultrasonic (I2C)</label>
             <div class="col-sm-10">
             <div class="checkbox"><label><input type="checkbox" id="hbf_ultrasonic" name="hbf_ultrasonic"> Enable Ultrasonic Sensor Fetch via I2C</label></div>
             </div>
           </div>
-                   
-                    
-                    
                      
           <!-- NoiseMatrix -->
           <div id="o_noisematrix" class="odiv hidden">
             <legend class="esps-legend">NoiseMatrix Configuration</legend>
-            
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_matrix_xdim">X Dimension (pixel per step)</label>
               <div class="col-sm-10">
@@ -241,7 +226,6 @@
                 <input type="text" class="form-control" id="hbf_matrix_ydim" name="hbf_matrix_ydim" placeholder="height of matrix">
               </div>
             </div>                           
-            
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_matrix_fps">FPS</label>
               <div class="col-sm-10">
@@ -255,12 +239,9 @@
               </div>
             </div>                                  
           </div>    
-          
           <!-- Fire -->
           <div id="o_fire" class="odiv hidden">
             <legend class="esps-legend">Fire Configuration</legend>
-                         
-            
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_fire_fps">FPS</label>
               <div class="col-sm-10">
@@ -280,13 +261,9 @@
               </div>
             </div>                                                
           </div>      
-          
-          
           <!-- Sparkle -->
           <div id="o_sparkle" class="odiv hidden">
             <legend class="esps-legend">Sparkle Configuration</legend>
-                         
-            
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_sparkle_fps">FPS</label>
               <div class="col-sm-10">
@@ -324,10 +301,6 @@
               </div>
             </div>                                                                                    
           </div>                             
-        
-     
-     
-     
           <!-- HBF Config Save -->
           <div class="form-group">
             <label class="control-label col-sm-2" for="refresh">Refresh Rate</label>
@@ -336,12 +309,142 @@
               <button type="button" onclick="submitConfig()" class="btn btn-primary">Save Changes</button>
             </div>
           </div>     
-
         </form>
       </fieldset>
     </div>
 
 
+
+    <!-- Fallback Configuration -->
+    <div id="fallback" class="mdiv hidden anchor">
+      <fieldset>
+        <legend class="esps-legend">Fallback Configuration</legend>
+        <form class="form-horizontal">
+                     
+          <!-- Slot 1 -->
+          <div id="o_fallback" class="odiv hidden">
+            <legend class="esps-legend">Slot 1</legend>
+            <div class="form-group">
+            <label class="control-label col-sm-2" for="hbf_fb_mode_1">Animation Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="hbf_fb_mode_1" name="hbf_fb_mode_1"></select>
+            </div>
+          </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_numleds_1">Number of leds</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_numleds_1" name="hbf_fb_numleds_1" placeholder="Number of leds">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_offset_1">Offset (where to start)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_offset_1" name="hbf_fb_offset_1" placeholder="Offset">
+              </div>
+            </div>                   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_reverse_1">Reverse Animation</label>
+              <div class="col-sm-10">
+              <div class="checkbox"><label><input type="checkbox" id="hbf_fb_reverse_1" name="hbf_fb_reverse_1">Reverse direction of Animation</label></div>
+              </div>
+            </div>
+            
+          <!-- Slot 2 -->
+
+            <legend class="esps-legend">Slot 2</legend>
+            <div class="form-group">
+            <label class="control-label col-sm-2" for="hbf_fb_mode_2">Animation Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="hbf_fb_mode_2" name="hbf_fb_mode_2"></select>
+            </div>
+          </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_numleds_2">Number of leds</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_numleds_2" name="hbf_fb_numleds_2" placeholder="Number of leds">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_offset_2">Offset (where to start)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_offset_2" name="hbf_fb_offset_2" placeholder="Offset">
+              </div>
+            </div>                   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_reverse_2">Reverse Animation</label>
+              <div class="col-sm-10">
+              <div class="checkbox"><label><input type="checkbox" id="hbf_fb_reverse_2" name="hbf_fb_reverse_2">Reverse direction of Animation</label></div>
+              </div>
+            </div>
+            
+          <!-- Slot 3 -->
+
+            <legend class="esps-legend">Slot 3</legend>
+            <div class="form-group">
+            <label class="control-label col-sm-2" for="hbf_fb_mode_3">Animation Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="hbf_fb_mode_3" name="hbf_fb_mode_3"></select>
+            </div>
+          </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_numleds_3">Number of leds</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_numleds_3" name="hbf_fb_numleds_3" placeholder="Number of leds">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_offset_3">Offset (where to start)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_offset_3" name="hbf_fb_offset_3" placeholder="Offset">
+              </div>
+            </div>                   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_reverse_3">Reverse Animation</label>
+              <div class="col-sm-10">
+              <div class="checkbox"><label><input type="checkbox" id="hbf_fb_reverse_3" name="hbf_fb_reverse_3">Reverse direction of Animation</label></div>
+              </div>
+            </div>
+            
+          <!-- Slot 4 -->
+
+            <legend class="esps-legend">Slot 4</legend>
+            <div class="form-group">
+            <label class="control-label col-sm-2" for="hbf_fb_mode_4">Animation Mode</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="hbf_fb_mode_4" name="hbf_fb_mode_4"></select>
+            </div>
+          </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_numleds_4">Number of leds</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_numleds_4" name="hbf_fb_numleds_4" placeholder="Number of leds">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_offset_4">Offset (where to start)</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_fb_offset_4" name="hbf_fb_offset_4" placeholder="Offset">
+              </div>
+            </div>                   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_fb_reverse_4">Reverse Animation</label>
+              <div class="col-sm-10">
+              <div class="checkbox"><label><input type="checkbox" id="hbf_fb_reverse_4" name="hbf_fb_reverse_4">Reverse direction of Animation</label></div>
+              </div>
+            </div>                                    
+            
+            
+          <!-- Fallback Config Save -->
+          <div class="form-group">
+            <div class="col-sm-10"><p class="form-control-static" id="refresh"></p></div>
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="button" onclick="submitConfig()" class="btn btn-primary">Save Changes</button>
+            </div>
+          </div>     
+        </form>
+      </fieldset>
+    </div>
+           
 
 
 
@@ -358,6 +461,7 @@
                 <option value="t_noisematrix">NoiseMatrix</option>
                 <option value="t_fire">Fire</option>
                 <option value="t_sparkle">Sparkle</option>
+                <option value="t_fallback">Fallback Setup</option>
                 <option value="t_static">Static</option>
                 <option value="t_chase">Chase</option>
                 <option value="t_rainbow">Rainbow</option>

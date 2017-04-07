@@ -5,9 +5,8 @@
 
 #define LOG_PORT        Serial 
 
-void Sparkle::setupSparkle(uint16_t conf_numberof_leds, uint16_t conf_sparkle_fps, uint8_t conf_cooling, uint8_t conf_twinkling, uint8_t conf_flicker, uint16_t conf_sparkle_bpm, uint16_t conf_sparkle_hue)
+void Sparkle::setupAnimation(uint16_t conf_sparkle_fps, uint8_t conf_cooling, uint8_t conf_twinkling, uint8_t conf_flicker, uint16_t conf_sparkle_bpm, uint16_t conf_sparkle_hue)
 {
-  this->num_leds = conf_numberof_leds;
   this->cooling = conf_cooling;
   this->twinkling = conf_twinkling;
   this->flicker = conf_flicker;
@@ -21,10 +20,16 @@ void Sparkle::setupSparkle(uint16_t conf_numberof_leds, uint16_t conf_sparkle_fp
   this->deltaTimeTwinkle = 0;
   this->deltaTimeSparkle = 0;
   this->beatStarted = true;  
+}
 
+void Sparkle::setEnvironment(uint16_t conf_numberof_leds, uint16_t conf_led_offset, bool conf_led_reverse)
+{
+  this->num_leds = conf_numberof_leds;
+  this->led_offset = conf_led_offset;
+  this->led_reverse = conf_led_reverse;  
   this->heat = (int *) malloc(conf_numberof_leds * sizeof(int));
   this->leds = (CRGB *) malloc(conf_numberof_leds * sizeof(CRGB));
-  LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds); 
+  LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds);   
 }
 
 void Sparkle::updateConfig(uint16_t conf_sparkle_fps, uint8_t conf_cooling, uint8_t conf_twinkling, uint8_t conf_flicker, uint16_t conf_sparkle_bpm, uint16_t conf_sparkle_hue)
@@ -148,7 +153,7 @@ void Sparkle::Sparkling() {
 
 // ###########################################################################
 
-void Sparkle::goSparkle()
+void Sparkle::getFrame()
 {
     if (this->loops == 0 && this->beatStarted == false) {
       this->nextBeat = millis();

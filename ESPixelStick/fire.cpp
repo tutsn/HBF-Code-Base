@@ -3,31 +3,38 @@
 #include "fire.h"
 #include <FastLED.h> 
 
-#define LOG_PORT        Serial 
 
-void Fire::setupFire(uint16_t conf_numberof_leds, uint8_t conf_cooling, uint8_t conf_sparking, bool conf_gReverseDirection)
+
+#define LOG_PORT Serial 
+
+void Fire::setupAnimation(uint8_t conf_cooling, uint8_t conf_sparking)
 {
   this->cooling = conf_cooling;
   this->sparking = conf_sparking;
-  this->num_leds = conf_numberof_leds;
-  this->gReverseDirection = conf_gReverseDirection;
-  this->heat = (byte *) malloc(conf_numberof_leds * sizeof(byte));
-  this->leds = (CRGB *) malloc(conf_numberof_leds * sizeof(CRGB));
-
-  LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds); 
   this->currentPalette = HeatColors_p; 
 }
 
-void Fire::updateConfig(uint8_t conf_cooling, uint8_t conf_sparking, bool conf_gReverseDirection)
+void Fire::setEnvironment(uint16_t conf_numberof_leds, uint16_t conf_led_offset, bool conf_led_reverse)
+{
+  this->num_leds = conf_numberof_leds;
+  this->led_offset = conf_led_offset;
+  this->led_reverse = conf_led_reverse; 
+  this->heat = (byte *) malloc(this->num_leds * sizeof(byte));
+  this->leds = (CRGB *) malloc(this->num_leds * sizeof(CRGB));
+  
+  LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds); 
+}
+
+void Fire::updateConfig(uint8_t conf_cooling, uint8_t conf_sparking, bool conf_led_reverse)
 {
   this->cooling = conf_cooling;
   this->sparking = conf_sparking;
   // this->num_leds = conf_numberof_leds; // updating this without restart means freeing memory and malloc again...
-  this->gReverseDirection = conf_gReverseDirection;  
+  this->led_reverse = conf_led_reverse;  
 }
 
 
-void Fire::goFire()
+void Fire::getFrame()
 {
   // static byte heat[NUM_LEDS];
   CRGB color;
@@ -56,7 +63,7 @@ void Fire::goFire()
       byte colorindex = scale8( this->heat[j], 240);
       CRGB color = ColorFromPalette( this->currentPalette, colorindex);
       int pixelnumber;
-      if( this->gReverseDirection ) {
+      if( this->led_reverse ) {
         pixelnumber = (this->num_leds-1) - j;
       } else {
         pixelnumber = j;
