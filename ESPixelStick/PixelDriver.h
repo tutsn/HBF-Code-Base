@@ -116,6 +116,11 @@ typedef struct {
 
 class PixelDriver {
  public:
+    stairPixelData_t     stairPixelData = {2, 100, 60, 80};     
+    waterAnimation_t     waterAnimation = {0.1, 1, 1, 5000};
+    bool                    ultrasonic = false;
+    uint32_t                step_anim_freq = 1;
+
     int begin();
     int begin(PixelType type);
     int begin(PixelType type, PixelColor color, uint16_t length);
@@ -123,9 +128,6 @@ class PixelDriver {
     void setGamma(bool gamma);
     void updateOrder(PixelColor color);
     void show();
-    void readSonar();
-    void setStairPixelGains(int stairNum, std::vector<float> gainArray);
-    void waterStairs();
     uint8_t* getData();
 
     /* Set channel value at address */
@@ -134,11 +136,9 @@ class PixelDriver {
     }
 
     inline void gainValue(uint16_t address, float gain) {
-        // pixdata[address] = (pixdata[address] / 255) * gain * 255;
-        pixdata[address] = (100.0 / 255.0) * gain * 255.0;
+        pixdata[address] = ((float)pixdata[address] / 255.0) * gain * 255.0;
+        // pixdata[address] = (100.0 / 255.0) * gain * 255.0;
     }
-
-
 
     /* Drop the update if our refresh rate is too high */
     inline bool canRefresh() {
@@ -160,11 +160,12 @@ class PixelDriver {
     static uint8_t    gOffset;  // Index of green byte
     static uint8_t    bOffset;  // Index of blue byte
     std::vector<stepData_t>     stepData;    // Sonar readings data of a foot step on a step  
-    stairPixelData_t     stairPixelData = {2, 100, 60, 80};     
-    waterAnimation_t     waterAnimation = {0.1, 1, 1, 5000};
 
     void ws2811_init();
     void gece_init();
+    void readSonar();
+    void setStairPixelGains(int stairNum, std::vector<float> gainArray);
+    void waterStairs();
 
     /* FIFO Handlers */
     static const uint8_t* ICACHE_RAM_ATTR fillWS2811(const uint8_t *buff,

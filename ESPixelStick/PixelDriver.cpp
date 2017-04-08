@@ -261,16 +261,10 @@ const uint8_t* ICACHE_RAM_ATTR PixelDriver::fillWS2811(const uint8_t *buff,
 void PixelDriver::show() {
     if (!pixdata) return;
 
-    readSonar();
-
-    // uint32_t stepPos = 0;
-
-    // if(millis() - testing.last > 100){
-    // }
-
-
-    // void PixelDriver::readSonar(&stepPos);
-
+    if (ultrasonic){
+        readSonar();
+        waterStairs();        
+    }
 
     if (type == PixelType::WS2811) {
         uart_buffer = pixdata;
@@ -306,32 +300,37 @@ uint8_t* PixelDriver::getData() {
 }
 
 void PixelDriver::readSonar(){
-    Wire.requestFrom(8, numStairs);                 // request numStairs bytes from slave device #8
+    Wire.requestFrom(8, stairPixelData.numStairs);                 // request numStairs bytes from slave device #8
     std::vector<int> dists;
     while (Wire.available()) {                      // slave may send less than requested
         dists.push_back(Wire.read());               // receive a byte as character
-        //LOG_PORT.print(dists.back());             // print the character
-        //LOG_PORT.print(" "); 
+        // LOG_PORT.print(dists.back());             // print the character
+        // LOG_PORT.print(" "); 
     }
+    // LOG_PORT.println(""); 
 
-    if(stepData.size() == 0){
-        for(int stNr = 0; stNr < numStairs; stNr++){
+    if(stepData.size() == 0){   
+        for(int stNr = 0; stNr < stairPixelData.numStairs; stNr++){
             stepData.push_back(stepData_t());
         }
     }
 
-    if(numStairs == dists.size()){
-        LOG_PORT.println(dists[0]); 
-        for(int stNr = 0; stNr < numStairs; stNr++){
-            if ((dists[stNr] > 0) && (dists[stNr] < stepLength)){
+    if(stairPixelData.numStairs == dists.size()){
+        for(int stNr = 0; stNr < stairPixelData.numStairs; stNr++){
+            if ((dists[stNr] > 0) && (dists[stNr] < stairPixelData.triggerDist)){
                 stepData[stNr].stairLinger++;  
             } else{
                 stepData[stNr].stairLinger = 0;
             }
 
-            if ((dists[stNr] > 0) && (dists[stNr] < stepLength) && stepData[stNr].stairLinger == 1){
+            if ((dists[stNr] > 0) && (dists[stNr] < stairPixelData.stepLength) && stepData[stNr].stairLinger == 1){
                 stepData[stNr].footStepTime = millis();
                 stepData[stNr].footStepDist = dists[stNr];
+                LOG_PORT.print("Stair Nr: ");
+                LOG_PORT.print(stNr);
+                LOG_PORT.print(" trigger distance ");
+                LOG_PORT.print(stepData[stNr].footStepDist);
+                LOG_PORT.println(" cm");
             }
         } 
     } else {
@@ -339,45 +338,46 @@ void PixelDriver::readSonar(){
     }
 }
 
-// void PixelDriver::water(){
+void PixelDriver::setStairPixelGains(int stairNum, std::vector<float> gainArray){
+    if(stairPixelData.numStairs <= stairNum)
+        LOG_PORT.println("Stair request out of range");
 
-//     for(int stNr = 0; stNr < numStairs; stNr++){
+    for(int pxNum = 0; pxNum < gainArray.size(); pxNum++){
+        int ch_offset;
+        if ( stairNum % 2 == 0)
+            ch_offset = (stairNum * stairPixelData.numPixels + pxNum) * 3;
+        else
+            ch_offset = ((stairNum + 1) * stairPixelData.numPixels - pxNum) * 3;
 
-//         if (millis() - stepData[stNr].footStepTime < maxTime){
+        gainValue(ch_offset++, gainArray[pxNum]);
+        gainValue(ch_offset++, gainArray[pxNum]);
+        gainValue(ch_offset, gainArray[pxNum]);
+    }
+}
 
-//             float t = (millis() - stepData[stNr].footStepTime) / 1000.0;
-//             float p = float((pixelsPerMeter / 100.0) * testing.step);
+void PixelDriver::waterStairs(){
+    std::vector<float> gains;
+    for(int stNr = 0; stNr < stairPixelData.numStairs; stNr++){
+        if (millis() - stepData[stNr].footStepTime < waterAnimation.maxTime){
+            float t = (millis() - stepData[stNr].footStepTime) / 1000.0;                                             // Time since footstep in seconds
+            float p = ((float)stairPixelData.numPixels / (float)stairPixelData.stepLength) * (float)stepData[stNr].footStepDist;// foot step position in pixel
               
-//             for(int y = 0; y < pixelsLength; y++) {
-//                 int ch_offset;
-//                 if ( stNr % 2 == 0)
-//                     ch_offset = (stNr * pixelsLength + y) * 3;
-//                 else
-//                     ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
-                
-//                 float x = (dissapationRate * t * float(y - p));
-//                 if (x == 0) x += 0.1;
-//                 float gain = (sin(2 * M_PI * oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
-    
-//                 pixels.setValue(ch_offset++, 255 * gain * R); 
-//                 pixels.setValue(ch_offset++, 255 * gain * G);
-//                 pixels.setValue(ch_offset, 255 * gain * B);                    
-//             }
-//         }
-//         else {
-//             for (int y = 0 ; y < pixelsLength; y++)
-//             {
-//                 int ch_offset;
-//                 if ( stNr % 2 == 0)
-//                     ch_offset = (stNr * pixelsLength + y) * 3;
-//                 else
-//                     ch_offset = ((stNr + 1) * pixelsLength - y) * 3;
+            for(int y = 0; y < stairPixelData.numPixels; y++) {               
+                float x = (waterAnimation.dissapationRate * t * float(y - p));
+                if (x == 0) x += 0.1;
+                float gain = (sin(2 * M_PI * step_anim_freq * t) * (sin(x) / x) + 1) / 2.0;
+      
+                gains.push_back(gain);
+            }
+        }
+        else {
+            for (int y = 0 ; y < stairPixelData.numPixels; y++)
+            {
+                float gain = (sin(2 * M_PI * step_anim_freq * (millis() / 1000.0)) * sin(waterAnimation.waveDensity * y) + 1) / 2.0;
 
-//                 float gain = (sin(2 * M_PI * oscillationRate * (millis() / 1000.0)) * sin(waveDensity * y) + 1) / 2.0;
-//                 pixels.setValue(ch_offset++, 255 * gain * R);
-//                 pixels.setValue(ch_offset++, 255 * gain * G);
-//                 pixels.setValue(ch_offset, 255 * gain * B);
-//             }
-//         }
-//     }
-// }
+                gains.push_back(gain);
+            }
+        }
+        setStairPixelGains(stNr, gains);
+    }
+}

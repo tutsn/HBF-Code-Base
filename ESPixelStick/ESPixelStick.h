@@ -105,6 +105,8 @@ typedef struct {
     /* HBF */
     /* Fetch Ultrasonic on/off */
     bool        ultrasonic;
+    uint16_t    peri_universe;       /* Universe to listen for */
+    uint16_t    num_peri_dimmers;
 
     /* NOISEMATRIX */
     uint16_t    matrix_xdim;

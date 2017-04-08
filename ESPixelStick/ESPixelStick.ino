@@ -343,6 +343,17 @@ void updateConfig() {
     /* Zero out packet stats */
     e131.stats.num_packets = 0;
 
+    /* Send Animation config Data to PixelDriver */
+    if (config.ultrasonic) {
+        LOG_PORT.println(F("Ultrasonic ON"));
+        pixels.ultrasonic = true;
+    } else {
+        LOG_PORT.println(F("Ultrasonic OFF"));
+        pixels.ultrasonic = false;
+    }
+    config.peri_universe = 3;
+    config.num_peri_dimmers = 1;
+
     /* Initialize for our pixel type */
 #if defined(ESPS_MODE_PIXEL)
     pixels.begin(config.pixel_type, config.pixel_color, config.channel_count / 3);
@@ -552,7 +563,8 @@ void loop() {
 
         /* Parse a packet and update pixels */
         if (e131.parsePacket()) {
-            if ((e131.universe >= config.universe) && (e131.universe <= uniLast)) {
+
+            if ((e131.universe >= config.universe) && (e131.universe <= uniLast + 1)) {
                 /* Universe offset and sequence tracking */
                 uint8_t uniOffset = (e131.universe - config.universe);
                 if (e131.packet->sequence_number != seqTracker[uniOffset]++) {
@@ -578,16 +590,25 @@ void loop() {
                 /* ignore data from start of first Universe before channel_start */
                 if(dataStart<0) {
                     dataStart=0;
-                    buffloc=config.channel_start-1;
+                    buffloc = config.channel_start - 1;
+                }  
+
+                if (e131.universe == config.peri_universe){
+                    for (int i = dataStart; i < dataStart + config.num_peri_dimmers; i++) {
+                        LOG_PORT.println(e131.data[buffloc]);
+                        pixels.step_anim_freq = 50 * (float)e131.data[buffloc]/255;
+                        buffloc++;
+                    }
                 }
-                
-                for (int i = dataStart; i < dataStop; i++) {
-    #if defined(ESPS_MODE_PIXEL)
-                    pixels.setValue(i, e131.data[buffloc]);
-    #elif defined(ESPS_MODE_SERIAL)
-                    serial.setValue(i, e131.data[buffloc]);
-    #endif
-                    buffloc++;
+                else {
+                    for (int i = dataStart; i < dataStop; i++) {
+        #if defined(ESPS_MODE_PIXEL)
+                        pixels.setValue(i, e131.data[buffloc]);
+        #elif defined(ESPS_MODE_SERIAL)
+                        serial.setValue(i, e131.data[buffloc]);
+        #endif
+                        buffloc++;
+                    }
                 }
             }
         }

@@ -56,6 +56,7 @@ void loop() {
       sonar[currentSensor].ping_median(smoothing);
     }
   }
+  Serial.println(cm[0]);
   Serial.println(cm[1]);
 }
 
@@ -65,7 +66,7 @@ void echoCheck() { // If ping received, set the sensor distance to array.
 }
 
 void requestEvent() {
-  Serial.println("send");
+  // Serial.println("send");
   Wire.write(cm, SONAR_NUM);                                                        // respond with message of SONAR_NUM bytes
   // for (uint8_t i = 0; i < SONAR_NUM; i++) cm[i] = 0;                                // Make distance zero in case there's no ping echo for this sensor.
 }
