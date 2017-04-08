@@ -154,6 +154,52 @@ void setup() {
 #endif
 
 
+
+// testing looped setup of backup animation objects
+for (int i = 0 ; i < 16 ; i++)
+{
+  LOG_PORT.print("setting up animation slot nr ");  
+  LOG_PORT.print(i);
+  LOG_PORT.print(": ");
+  int slotmode = (static_cast<uint8_t>(config.fb_mode[i]));
+
+  switch(config.fb_mode[i])
+  {
+    case NeopixelMode::deactivated:
+      LOG_PORT.println("deactivated");
+    break;
+
+    case NeopixelMode::Fire:
+      LOG_PORT.print("Fire --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);
+    break;
+
+    case NeopixelMode::Sparkle:
+      LOG_PORT.print("Sparkle --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);      
+    break;
+
+    case NeopixelMode::Other:
+      LOG_PORT.print("Other --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);      
+    break;            
+  }  
+
+}
+
+
 // setup the FastLed fallback animations when in WS2812 mode
     fastled_setup(config.channel_count / 3);
     stairs_matrix_setup();
@@ -409,7 +455,7 @@ void dsDeviceConfig(JsonObject &json) {
 
     /* Fallback Mode */
     for (int i = 0; i < 16; i++) {
-        config.fb_mode[i] = json["fallback"]["fb_mode"][i];
+        config.fb_mode[i] = NeopixelMode(static_cast<uint8_t>(json["fallback"]["fb_mode"][i]));
         config.fb_numleds[i] = json["fallback"]["fb_numleds"][i];
         config.fb_offset[i] = json["fallback"]["fb_offset"][i];
         config.fb_reverse[i] = json["fallback"]["fb_reverse"][i];
@@ -547,7 +593,7 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     JsonArray &fb_offset = fallback.createNestedArray("fb_offset");
     JsonArray &fb_reverse = fallback.createNestedArray("fb_reverse");
     for (int i = 0; i < 16; i++) {
-        fb_mode.add(config.fb_mode[i]);
+        fb_mode.add(static_cast<uint8_t>(config.fb_mode[i]));
         fb_numleds.add(config.fb_numleds[i]);
         fb_offset.add(config.fb_offset[i]);
         fb_reverse.add(config.fb_reverse[i]);

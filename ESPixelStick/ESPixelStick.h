@@ -119,7 +119,7 @@ typedef struct {
     NeopixelMode  neopixel_mode;
 
     /* Fallback Modes */
-    uint8_t     fb_mode[16];
+    NeopixelMode fb_mode[16];
     uint16_t    fb_numleds[16];
     uint16_t    fb_offset[16];
     bool        fb_reverse[16];
