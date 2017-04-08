@@ -165,8 +165,8 @@ for (int i = 0 ; i < 16 ; i++)
 
   switch(config.fb_mode[i])
   {
-    case NeopixelMode::deactivated:
-      LOG_PORT.println("deactivated");
+    case NeopixelMode::disabled:
+      LOG_PORT.println("disabled");
     break;
 
     case NeopixelMode::Fire:
@@ -176,6 +176,15 @@ for (int i = 0 ; i < 16 ; i++)
       LOG_PORT.print(config.fb_offset[i]);
       LOG_PORT.print(" / direction: ");
       LOG_PORT.println(config.fb_reverse[i]);
+      
+      AnimationFire.push_back(Fire());
+
+      LOG_PORT.print("-- Fire vector size ");
+      LOG_PORT.println(AnimationFire.size());  
+
+      AnimationFire.back().setupAnimation(config.fire_cooling, config.fire_sparking);
+      AnimationFire.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);
+    
     break;
 
     case NeopixelMode::Sparkle:
@@ -184,7 +193,16 @@ for (int i = 0 ; i < 16 ; i++)
       LOG_PORT.print(" / offset: ");
       LOG_PORT.print(config.fb_offset[i]);
       LOG_PORT.print(" / direction: ");
-      LOG_PORT.println(config.fb_reverse[i]);      
+      LOG_PORT.println(config.fb_reverse[i]);  
+
+      AnimationSparkle.push_back(Sparkle());
+
+      LOG_PORT.print("-- Sparkle vector size ");
+      LOG_PORT.println(AnimationSparkle.size()); 
+
+      AnimationSparkle.back().setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+      AnimationSparkle.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);       
+               
     break;
 
     case NeopixelMode::Other:
@@ -204,24 +222,10 @@ for (int i = 0 ; i < 16 ; i++)
     fastled_setup(config.channel_count / 3);
     stairs_matrix_setup();
 
-
-    backup_fire_1.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_1.setEnvironment(50, 0, true);    
-    backup_fire_2.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_2.setEnvironment(50, 50, false);
-    backup_fire_3.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_3.setEnvironment(50, 100, true);
-    backup_fire_4.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_4.setEnvironment(50, 150, false);
-    backup_fire_5.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_5.setEnvironment(50, 200, true);
-    backup_fire_6.setupAnimation(config.fire_cooling , config.fire_sparking);
-    backup_fire_6.setEnvironment(50, 250, false);
-    backup_sparkle_1.setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
-    backup_sparkle_1.setEnvironment(50, 0, true);
-
-    
-
+    backup_fire.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire.setEnvironment(config.channel_count/3, 0, false);    
+    backup_sparkle.setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+    backup_sparkle.setEnvironment(config.channel_count/3, 0, false);
 
     // set D3 to OUTPUT LOW to open the LLS and show status led 
     pinMode(D3, OUTPUT);
@@ -412,8 +416,8 @@ void updateConfig() {
     LOG_PORT.print(F(" to "));
     LOG_PORT.println(uniLast);
 
-    backup_fire_1.updateConfig(config.fire_cooling, config.fire_sparking, false);
-    backup_sparkle_1.updateConfig(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+    backup_fire.updateConfig(config.fire_cooling, config.fire_sparking, false);
+    backup_sparkle.updateConfig(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
 }
 
 /* De-Serialize Network config */
@@ -704,6 +708,7 @@ void loop() {
       //keep feeding server so we don't overrun with packets
       e131.parsePacket();
     
+      uint16_t num_pixels;
       switch(config.testmode){
 
         case TestMode::NOISEMATRIX:
@@ -745,71 +750,27 @@ void loop() {
         break;
 
 case TestMode::FIRE:
-          //run noise matrix
+
           
           if(millis() - testing.last > (1000 / config.fire_fps)){
             //time for new step
             testing.last = millis();
 
           // call customized FastLed-routine and build a single frame
-          
-          //Fire2012WithPalette(config.fire_cooling, config.fire_sparking);
-          backup_fire_1.getFrame();
-          backup_fire_2.getFrame();
-          backup_fire_3.getFrame();
-          backup_fire_4.getFrame();
-          backup_fire_5.getFrame();
-          backup_fire_6.getFrame();
+          backup_fire.getFrame();
+          num_pixels = config.channel_count/3;
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
-            // NUM_LEDS comes from FastLed-routine btw.
 
-            // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < backup_fire_1.num_leds ; i++)
+            num_pixels = config.channel_count/3;
+            for (int i = 0 ; i < num_pixels ; i++)
             {
               int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_1.leds[i].r);
-              pixels.setValue(ch_offset++, backup_fire_1.leds[i].g);
-              pixels.setValue(ch_offset, backup_fire_1.leds[i].b);  
+              pixels.setValue(ch_offset++, backup_fire.leds[i].r);
+              pixels.setValue(ch_offset++, backup_fire.leds[i].g);
+              pixels.setValue(ch_offset, backup_fire.leds[i].b);  
             }
-            for (int i = 50 ; i < 50 + backup_fire_2.num_leds ; i++)
-            {
-              int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_2.leds[i - 50].r);
-              pixels.setValue(ch_offset++, backup_fire_2.leds[i - 50].g);
-              pixels.setValue(ch_offset, backup_fire_2.leds[i - 50].b); 
-            }
-            for (int i = 100 ; i < 100 + backup_fire_3.num_leds ; i++)
-            {
-              int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_3.leds[i - 100].r);
-              pixels.setValue(ch_offset++, backup_fire_3.leds[i - 100].g);
-              pixels.setValue(ch_offset, backup_fire_3.leds[i -100].b); 
-            }
-            for (int i = 150 ; i < 150 + backup_fire_4.num_leds ; i++)
-            {
-              int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_4.leds[i - 150].r);
-              pixels.setValue(ch_offset++, backup_fire_4.leds[i - 150].g);
-              pixels.setValue(ch_offset, backup_fire_4.leds[i -150].b); 
-            }
-            for (int i = 200 ; i < 200 + backup_fire_5.num_leds ; i++)
-            {
-              int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_5.leds[i - 200].r);
-              pixels.setValue(ch_offset++, backup_fire_5.leds[i - 200].g);
-              pixels.setValue(ch_offset, backup_fire_5.leds[i - 200].b);                                                                   
-            }
-            for (int i = 250 ; i < 250 + backup_fire_6.num_leds ; i++)
-            {
-              int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_fire_6.leds[i - 250].r);
-              pixels.setValue(ch_offset++, backup_fire_6.leds[i - 250].g);
-              pixels.setValue(ch_offset, backup_fire_6.leds[i - 250].b);                                                                   
-            }            
-
-                        
         
         #elif defined(ESPS_MODE_SERIAL)
             
@@ -828,34 +789,29 @@ case TestMode::FIRE:
         break;
 
 case TestMode::SPARKLE:
-          //run noise matrix
           
           if(millis() - testing.last > (1000 / config.sparkle_fps)){
             //time for new step
             testing.last = millis();
 
           // call customized FastLed-routine and build a single frame
-          // getSparkle();
-//          getSparkle(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
-          backup_sparkle_1.getFrame();
-          
+          backup_sparkle.getFrame();
+          num_pixels = config.channel_count/3;
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
-            // NUM_LEDS comes from FastLed-routine btw.
-
-            // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < backup_sparkle_1.num_leds ; i++)
+                        
+            for (int i = 0 ; i < num_pixels ; i++)
             {
               int ch_offset = i*3;
-              pixels.setValue(ch_offset++, backup_sparkle_1.leds[i].r);
-              pixels.setValue(ch_offset++, backup_sparkle_1.leds[i].g);
-              pixels.setValue(ch_offset, backup_sparkle_1.leds[i].b);
+              pixels.setValue(ch_offset++, backup_sparkle.leds[i].r);
+              pixels.setValue(ch_offset++, backup_sparkle.leds[i].g);
+              pixels.setValue(ch_offset, backup_sparkle.leds[i].b);
             }
         
         #elif defined(ESPS_MODE_SERIAL)
             
             // ++ check if NUM_LEDS exceeds Pixel count !
-            for (int i = 0 ; i < NUM_LEDS ; i++)
+            for (int i = 0 ; i < num_pixels ; i++)
             {
               LOG_PORT.print(leds[i].r);
               LOG_PORT.print(" : ");
@@ -868,6 +824,47 @@ case TestMode::SPARKLE:
           }
         break;        
         
+
+case TestMode::FALLBACK:
+          //run configured fallback animation
+          // Fire::
+          if(millis() - testing.last > (1000 / config.fire_fps))
+          {
+            //time for new step
+            testing.last = millis();
+            for (int vecpos = 0; vecpos < AnimationFire.size() ; vecpos++)
+            {
+              AnimationFire[vecpos].getFrame();
+              for (int i= AnimationFire[vecpos].led_offset ; i < AnimationFire[vecpos].led_offset + AnimationFire[vecpos].num_leds ; i++)
+              {
+                int ch_offset = i*3;
+                pixels.setValue(ch_offset++, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].r);
+                pixels.setValue(ch_offset++, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].g);
+                pixels.setValue(ch_offset, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].b); 
+              }
+            }  
+          }
+          // Fire::
+          if(millis() - testing.last2 > (1000 / config.sparkle_fps))
+          {
+            //time for new step
+            testing.last2 = millis();
+            for (int vecpos = 0; vecpos < AnimationSparkle.size() ; vecpos++)
+            {
+              AnimationSparkle[vecpos].getFrame();
+              for (int i= AnimationSparkle[vecpos].led_offset ; i < AnimationSparkle[vecpos].led_offset + AnimationSparkle[vecpos].num_leds ; i++)
+              {
+                int ch_offset = i*3;
+                pixels.setValue(ch_offset++, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].r);
+                pixels.setValue(ch_offset++, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].g);
+                pixels.setValue(ch_offset, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].b); 
+              }
+            }  
+          }          
+
+          
+        break;  
+
        
         case TestMode::STATIC: {
           

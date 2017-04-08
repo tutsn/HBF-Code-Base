@@ -60,7 +60,7 @@ const char CONFIG_FILE[] = "/config.json";
 
 /* Neopixel Modes */
 enum class NeopixelMode : uint8_t {
-    deactivated,
+    disabled,
     Fire,
     Sparkle,
     Other
@@ -78,6 +78,7 @@ enum class TestMode : uint8_t {
     NOISEMATRIX,
     FIRE,
     SPARKLE,
+    FALLBACK,
     STATIC,
     CHASE,
     RAINBOW,
@@ -88,6 +89,7 @@ typedef struct {
     uint8_t r,g,b;              //hold requested color
     uint16_t step;               //step in testing routine
     uint32_t last;              //last update
+    uint32_t last2;   
 } testing_t;
 
 /* Configuration structure */
@@ -166,6 +168,13 @@ bool            reboot = false; /* Reboot flag */
 AsyncWebServer  web(HTTP_PORT); /* Web Server */
 AsyncWebSocket  ws("/ws");      /* Web Socket Plugin */
 
+
+// Background Animation Objects in Vectoren
+std::vector<Fire> AnimationFire;
+std::vector<Sparkle> AnimationSparkle;
+// add another one here
+
+
 /* Output Drivers */
 #if defined(ESPS_MODE_PIXEL)
 #include "PixelDriver.h"
@@ -177,23 +186,9 @@ SerialDriver    serial;         /* Serial object */
 #error "No valid output mode defined."
 #endif
 
-/* Instanzen der Backupanimationen erzeugen */
-
-
-// Instanz von Fire
-Fire backup_fire_1;
-Fire backup_fire_2;
-Fire backup_fire_3;
-Fire backup_fire_4;
-Fire backup_fire_5;
-Fire backup_fire_6;
-
-// INstanz von Sparkle
-Sparkle backup_sparkle_1;
-
-
-
-
+/* Instanzen der Backupanimationen über alle leds erzeugen */
+Fire backup_fire;
+Sparkle backup_sparkle;
 
 
 /* Forward Declarations */

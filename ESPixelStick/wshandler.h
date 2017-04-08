@@ -101,25 +101,25 @@ void procE(uint8_t *data, AsyncWebSocketClient *client) {
 #endif
             // Fallback Modes
             JsonObject &hbf_fb_mode_1 = json.createNestedObject("hbf_fb_mode_1");
-            hbf_fb_mode_1["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_1["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
             hbf_fb_mode_1["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
             hbf_fb_mode_1["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
             hbf_fb_mode_1["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
 
             JsonObject &hbf_fb_mode_2 = json.createNestedObject("hbf_fb_mode_2");
-            hbf_fb_mode_2["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_2["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
             hbf_fb_mode_2["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
             hbf_fb_mode_2["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
             hbf_fb_mode_2["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
 
             JsonObject &hbf_fb_mode_3 = json.createNestedObject("hbf_fb_mode_3");
-            hbf_fb_mode_3["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_3["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
             hbf_fb_mode_3["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
             hbf_fb_mode_3["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
             hbf_fb_mode_3["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
 
             JsonObject &hbf_fb_mode_4 = json.createNestedObject("hbf_fb_mode_4");
-            hbf_fb_mode_4["deactivated"] = static_cast<uint8_t>(NeopixelMode::deactivated);
+            hbf_fb_mode_4["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
             hbf_fb_mode_4["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
             hbf_fb_mode_4["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
             hbf_fb_mode_4["Other"] = static_cast<uint8_t>(NeopixelMode::Other);                                    
@@ -256,6 +256,11 @@ void procT(uint8_t *data, AsyncWebSocketClient *client) {
             config.testmode = TestMode::SPARKLE;
             LOG_PORT.println("TESTMODE SPARKLE");                        
         break;
+
+        case '8': // FALLBACK
+            config.testmode = TestMode::FALLBACK;
+            LOG_PORT.println("FALLBACK ANIMATIONS");                        
+        break;        
     }
 }
 

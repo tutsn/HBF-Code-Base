@@ -3,9 +3,8 @@
 #include "fire.h"
 #include <FastLED.h> 
 
-
-
 #define LOG_PORT Serial 
+
 
 void Fire::setupAnimation(uint8_t conf_cooling, uint8_t conf_sparking)
 {
