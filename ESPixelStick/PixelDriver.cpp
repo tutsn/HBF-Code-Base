@@ -22,6 +22,9 @@
 #include <algorithm>
 #include "PixelDriver.h"
 #include "bitbang.h"
+#include "GammaValues.h"
+#include <Wire.h>
+#include "PCA9685.h"
 
 extern "C" {
 #include <eagle_soc.h>
@@ -30,6 +33,8 @@ extern "C" {
 #include <uart_register.h>
 }
 
+#define LOG_PORT        Serial 
+
 static const uint8_t    *uart_buffer;       // Buffer tracker
 static const uint8_t    *uart_buffer_tail;  // Buffer tracker
 static bool             ws2811gamma;        // Gamma flag
@@ -37,6 +42,8 @@ static bool             ws2811gamma;        // Gamma flag
 uint8_t PixelDriver::rOffset = 0;
 uint8_t PixelDriver::gOffset = 1;
 uint8_t PixelDriver::bOffset = 2;
+
+PCA9685 pwmController; 
 
 int PixelDriver::begin() {
     return begin(PixelType::WS2811, PixelColor::RGB, 170);
@@ -93,6 +100,15 @@ int PixelDriver::begin(PixelType type, PixelColor color, uint16_t length) {
     } else if (type == PixelType::GECE) {
         refreshTime = (GECE_TFRAME + GECE_TIDLE) * length;
         gece_init();
+    } else if (type == PixelType::PCA) {
+        refreshTime = (PCA_TFRAME + PCA_TIDLE) * length;
+        Wire.begin();                       // Wire must be started first for PCA controller class
+        Wire.setClock(400000);
+            /* Setup serial log port */
+    LOG_PORT.begin(115200);
+    delay(10);
+
+        pca_init();
     } else {
         retval = false;
     }
@@ -143,6 +159,13 @@ void PixelDriver::gece_init() {
     Serial1.end();
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
+}
+
+void PixelDriver::pca_init() {
+    /* Reset and set PCA controller class */
+    pwmController.resetDevices();       // Software resets all PCA9685 devices on Wire line
+    pwmController.init(B000000);        // Address pins A5-A0 set to B000000
+    pwmController.setPWMFrequency(1526); // Default is 200Hz, supports 24Hz to 1526Hz
 }
 
 void PixelDriver::updateOrder(PixelColor color) {
@@ -283,6 +306,24 @@ void PixelDriver::show() {
             /* and send it */
             doGECE(pin, packet);
         }
+    } else if (type == PixelType::PCA) {
+
+        /* Build a PCA I2C command */
+        startTime = micros();
+        uint16_t pwms[16];
+        for (uint8_t i = 0; i < numPixels; i++) {
+            uint8_t bugfix = pixdata[i];
+            if (bugfix < 0) bugfix = 0;
+            if (pixdata[i]) { pwms[i] = GAMMA_PCA8[bugfix]-1;} // & zeichen vor Gamma weggenommen //tom// warum nimmt der der nicht 4095???
+            
+            /*LOG_PORT.println(GAMMA_PCA8[bugfix]);
+            LOG_PORT.println(pixdata[i]);
+            LOG_PORT.println("");
+            // pwms[i] =  pixdata[i]*2+1;
+*/
+        }
+        pwmController.setChannelsPWM(0, 16, pwms);
+      
     }
 }
 

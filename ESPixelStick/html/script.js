@@ -324,7 +324,7 @@ function getConfig(data) {
     if (config.device.mode === 0) {  // Pixel
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
-        $('#p_count').val(config.e131.channel_count / 3);
+			$('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
         $('#p_gamma').prop('checked', config.pixel.gamma);
