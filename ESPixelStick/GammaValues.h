@@ -39,6 +39,7 @@ const uint8_t GAMMA_2811[] = {
 };
 
 /* 8bit -> 12bit PWN Gamma correction for single channel dmx values - based on CIE 1931 */
+const uint16_t GAMMA_PCA8[] = {
   0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 18, 20, 21, 23, 25, 27, 
   28, 30, 32, 34, 36, 37, 39, 41, 43, 45, 47, 49, 52, 54, 56, 59, 
   61, 64, 66, 69, 72, 75, 77, 80, 83, 87, 90, 93, 96, 100, 103, 107, 
@@ -57,6 +58,7 @@ const uint8_t GAMMA_2811[] = {
 };
   
 /* 12bit PWN Gamma correction for 2 channel/16bit dmx values divided by 4 - based on CIE 1931 */
+const uint16_t GAMMA_PCA12[] = {
   0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 
   2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
   4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 
