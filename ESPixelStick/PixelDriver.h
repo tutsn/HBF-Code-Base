@@ -119,7 +119,7 @@ class PixelDriver {
     stairPixelData_t     stairPixelData = {2, 100, 60, 80};     
     waterAnimation_t     waterAnimation = {0.1, 1, 1, 5000};
     bool                    ultrasonic = false;
-    uint32_t                step_anim_freq = 1;
+    uint8_t                peri_dimmer = 10;
 
     int begin();
     int begin(PixelType type);
@@ -166,6 +166,8 @@ class PixelDriver {
     void readSonar();
     void setStairPixelGains(int stairNum, std::vector<float> gainArray);
     void waterStairs();
+    void sendPeriDMX();
+
 
     /* FIFO Handlers */
     static const uint8_t* ICACHE_RAM_ATTR fillWS2811(const uint8_t *buff,

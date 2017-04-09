@@ -595,8 +595,7 @@ void loop() {
 
                 if (e131.universe == config.peri_universe){
                     for (int i = dataStart; i < dataStart + config.num_peri_dimmers; i++) {
-                        LOG_PORT.println(e131.data[buffloc]);
-                        pixels.step_anim_freq = 50 * (float)e131.data[buffloc]/255;
+                        pixels.peri_dimmer = e131.data[buffloc];
                         buffloc++;
                     }
                 }

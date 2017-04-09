@@ -266,6 +266,8 @@ void PixelDriver::show() {
         waterStairs();        
     }
 
+    sendPeriDMX();
+
     if (type == PixelType::WS2811) {
         uart_buffer = pixdata;
         uart_buffer_tail = pixdata + szBuffer;
@@ -297,6 +299,14 @@ void PixelDriver::show() {
 
 uint8_t* PixelDriver::getData() {
     return pixdata;
+}
+
+void PixelDriver::sendPeriDMX(){
+    Wire.beginTransmission(8); // transmit to device #8
+    Wire.write(peri_dimmer);              // sends one byte
+    LOG_PORT.print("Sent Peri ");
+    LOG_PORT.println(peri_dimmer);
+    Wire.endTransmission();    // stop transmitting
 }
 
 void PixelDriver::readSonar(){
@@ -356,6 +366,7 @@ void PixelDriver::setStairPixelGains(int stairNum, std::vector<float> gainArray)
 }
 
 void PixelDriver::waterStairs(){
+    waterAnimation.oscillationRate = 50 * (float)peri_dimmer/255;
     std::vector<float> gains;
     for(int stNr = 0; stNr < stairPixelData.numStairs; stNr++){
         if (millis() - stepData[stNr].footStepTime < waterAnimation.maxTime){
@@ -365,7 +376,7 @@ void PixelDriver::waterStairs(){
             for(int y = 0; y < stairPixelData.numPixels; y++) {               
                 float x = (waterAnimation.dissapationRate * t * float(y - p));
                 if (x == 0) x += 0.1;
-                float gain = (sin(2 * M_PI * step_anim_freq * t) * (sin(x) / x) + 1) / 2.0;
+                float gain = (sin(2 * M_PI * waterAnimation.oscillationRate * t) * (sin(x) / x) + 1) / 2.0;
       
                 gains.push_back(gain);
             }
@@ -373,7 +384,7 @@ void PixelDriver::waterStairs(){
         else {
             for (int y = 0 ; y < stairPixelData.numPixels; y++)
             {
-                float gain = (sin(2 * M_PI * step_anim_freq * (millis() / 1000.0)) * sin(waterAnimation.waveDensity * y) + 1) / 2.0;
+                float gain = (sin(2 * M_PI * waterAnimation.oscillationRate * (millis() / 1000.0)) * sin(waterAnimation.waveDensity * y) + 1) / 2.0;
 
                 gains.push_back(gain);
             }

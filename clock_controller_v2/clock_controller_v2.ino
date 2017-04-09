@@ -268,7 +268,8 @@ int recBinToDec(String prevBin) {
 }
 
 void doRunSteppers(int stepSize) {
-
+  rightStepper.setSpeed(stepSpeed);
+  leftStepper.setSpeed(stepSpeed);
   if (runLeftStepper == true) {
      leftStepper.step(stepSize);
     lmStepCount = lmStepCount + stepSize;
@@ -391,15 +392,15 @@ void doMenuSelect () {
       lcd.setCursor(0, 1);
       lcd.print("Speed = ");
       lcd.setCursor(8, 1);
-      lcd.print(rpmToHz(50)); // revolutions per second
+      lcd.print(rpmToHz(stepSpeed)); // revolutions per second
       lcd.setCursor(14, 1);
       lcd.print("Hz");
         //I2C on address 8 - Slave
       Wire.begin(8);                // join i2c bus with address #8
-      Wire.onRequest(requestEvent); // register event
+      // Wire.onRequest(requestEvent); // register event
       Wire.onReceive(receiveEvent);
-      rightStepper.setSpeed(2);
-      leftStepper.setSpeed(2);
+      rightStepper.setSpeed(stepSpeed);
+      leftStepper.setSpeed(stepSpeed);
       runLeftStepper = true;
       runRightStepper = true;
       recieveMode = false;
@@ -413,7 +414,7 @@ void doMenuSelect () {
       } else {
         stepSpeed = stepSpeed + 5;
       }
-      rightStepper.setSpeed(stepSpeed);
+      rightStepper.setSpeed(stepSpeed); 
       leftStepper.setSpeed(stepSpeed);
 
       lcd.setCursor(0, 1);
@@ -465,10 +466,18 @@ void clearScreen(int row) {
 
 void requestEvent() {
   // Serial.println("send");
-  Wire.write(cm, SONAR_NUM);                                                        // respond with message of SONAR_NUM bytes
+  // Wire.write(cm, SONAR_NUM);                                                        // respond with message of SONAR_NUM bytes
   // for (uint8_t i = 0; i < SONAR_NUM; i++) cm[i] = 0;                                // Make distance zero in case there's no ping echo for this sensor.
 }
 
 void receiveEvent(int howMany) {
-  stepSpeed = Wire.read() * 4;
+  stepSpeed = Wire.read();
+  lcd.setCursor(8, 1);
+  lcd.print(rpmToHz(stepSpeed)); // revolutions per second
+  // while (1 < Wire.available()) { // loop through all but the last
+  //   int x = Wire.read() * 4; // receive byte as a character
+  //   Serial.print(c);         // print the character
+  // }
+  // int x = Wire.read();    // receive byte as an integer
+  Serial.println("I2C");         // print the integer
 }
