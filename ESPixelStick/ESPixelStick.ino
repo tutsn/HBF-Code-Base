@@ -49,6 +49,8 @@ const char passphrase[] = "strangersrest123";
 #include "wshandler.h"
 #include <Wire.h>
 
+
+
 extern "C" {
 #include <user_interface.h>
 }
@@ -163,11 +165,78 @@ void setup() {
 #endif
 
 
+
+// testing looped setup of backup animation objects
+for (int i = 0 ; i < 16 ; i++)
+{
+  LOG_PORT.print("setting up animation slot nr ");  
+  LOG_PORT.print(i);
+  LOG_PORT.print(": ");
+  int slotmode = (static_cast<uint8_t>(config.fb_mode[i]));
+
+  switch(config.fb_mode[i])
+  {
+    case NeopixelMode::disabled:
+      LOG_PORT.println("disabled");
+    break;
+
+    case NeopixelMode::Fire:
+      LOG_PORT.print("Fire --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);
+      
+      AnimationFire.push_back(Fire());
+
+      LOG_PORT.print("-- Fire vector size ");
+      LOG_PORT.println(AnimationFire.size());  
+
+      AnimationFire.back().setupAnimation(config.fire_cooling, config.fire_sparking);
+      AnimationFire.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);
+    
+    break;
+
+    case NeopixelMode::Sparkle:
+      LOG_PORT.print("Sparkle --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);  
+
+      AnimationSparkle.push_back(Sparkle());
+
+      LOG_PORT.print("-- Sparkle vector size ");
+      LOG_PORT.println(AnimationSparkle.size()); 
+
+      AnimationSparkle.back().setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+      AnimationSparkle.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);       
+               
+    break;
+
+    case NeopixelMode::Other:
+      LOG_PORT.print("Other --> num_leds: ");
+      LOG_PORT.print(config.fb_numleds[i]);
+      LOG_PORT.print(" / offset: ");
+      LOG_PORT.print(config.fb_offset[i]);
+      LOG_PORT.print(" / direction: ");
+      LOG_PORT.println(config.fb_reverse[i]);      
+    break;            
+  }  
+
+}
+
+
 // setup the FastLed fallback animations when in WS2812 mode
     fastled_setup(config.channel_count / 3);
     stairs_matrix_setup();
 
-
+    backup_fire.setupAnimation(config.fire_cooling , config.fire_sparking);
+    backup_fire.setEnvironment(config.channel_count/3, 0, false);    
+    backup_sparkle.setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+    backup_sparkle.setEnvironment(config.channel_count/3, 0, false);
 
     // set D3 to OUTPUT LOW to open the LLS and show status led 
     pinMode(D3, OUTPUT);
@@ -343,6 +412,7 @@ void updateConfig() {
     /* Zero out packet stats */
     e131.stats.num_packets = 0;
 
+<<<<<<< HEAD
     /* Send Animation config Data to PixelDriver */
     if (config.ultrasonic) {
         LOG_PORT.println(F("Ultrasonic ON"));
@@ -353,6 +423,8 @@ void updateConfig() {
     }
     config.peri_universe = 3;
     config.num_peri_dimmers = 1;
+=======
+>>>>>>> backup_stairs-animation
 
     /* Initialize for our pixel type */
 #if defined(ESPS_MODE_PIXEL)
@@ -367,6 +439,9 @@ void updateConfig() {
     LOG_PORT.print(config.universe);
     LOG_PORT.print(F(" to "));
     LOG_PORT.println(uniLast);
+
+    backup_fire.updateConfig(config.fire_cooling, config.fire_sparking, false);
+    backup_sparkle.updateConfig(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
 }
 
 /* De-Serialize Network config */
@@ -403,14 +478,35 @@ void dsDeviceConfig(JsonObject &json) {
     config.multicast = json["e131"]["multicast"];
 
     /* HBF */
-    /* Fetch Ultrasonic */
+     /* Fetch Ultrasonic */
     config.ultrasonic = json["hbf"]["ultrasonic"];
+
+    /* Fallback Mode */
+    for (int i = 0; i < 16; i++) {
+        config.fb_mode[i] = NeopixelMode(static_cast<uint8_t>(json["fallback"]["fb_mode"][i]));
+        config.fb_numleds[i] = json["fallback"]["fb_numleds"][i];
+        config.fb_offset[i] = json["fallback"]["fb_offset"][i];
+        config.fb_reverse[i] = json["fallback"]["fb_reverse"][i];
+    }
 
     /* NOISEMATRIX */
     config.matrix_xdim = json["noisematrix"]["xdim"];
     config.matrix_ydim = json["noisematrix"]["ydim"];    
     config.matrix_fps = json["noisematrix"]["fps"];
     config.matrix_spp = json["noisematrix"]["spp"];
+
+    /* Fire */
+    config.fire_fps = json["fire"]["fps"];
+    config.fire_cooling = json["fire"]["cooling"];
+    config.fire_sparking = json["fire"]["sparking"];   
+
+    /* Sparkle */
+    config.sparkle_fps = json["sparkle"]["fps"];
+    config.sparkle_cooling = json["sparkle"]["cooling"];
+    config.sparkle_twinkle = json["sparkle"]["twinkle"]; 
+    config.sparkle_flicker = json["sparkle"]["flicker"];
+    config.sparkle_bpm = json["sparkle"]["bpm"];
+    config.sparkle_hue = json["sparkle"]["hue"];            
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
@@ -514,9 +610,22 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
 #endif
 
     /* HBF */
-    /* Fetch Ultrasonic */
     JsonObject &hbf = json.createNestedObject("hbf");
+    /* Fetch Ultrasonic */
     hbf["ultrasonic"] = config.ultrasonic;
+
+    /* Fallback Mode */
+    JsonObject &fallback = json.createNestedObject("fallback");
+    JsonArray &fb_mode = fallback.createNestedArray("fb_mode");
+    JsonArray &fb_numleds = fallback.createNestedArray("fb_numleds");
+    JsonArray &fb_offset = fallback.createNestedArray("fb_offset");
+    JsonArray &fb_reverse = fallback.createNestedArray("fb_reverse");
+    for (int i = 0; i < 16; i++) {
+        fb_mode.add(static_cast<uint8_t>(config.fb_mode[i]));
+        fb_numleds.add(config.fb_numleds[i]);
+        fb_offset.add(config.fb_offset[i]);
+        fb_reverse.add(config.fb_reverse[i]);
+    }
     
     /* NOISEMATRIX */
     JsonObject &noisematrix = json.createNestedObject("noisematrix");
@@ -524,6 +633,21 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     noisematrix["ydim"] = config.matrix_ydim;
     noisematrix["fps"] = config.matrix_fps;
     noisematrix["spp"] = config.matrix_spp;
+
+    /* Fire */
+    JsonObject &fire = json.createNestedObject("fire");
+    fire["fps"] = config.fire_fps;
+    fire["cooling"] = config.fire_cooling;
+    fire["sparking"] = config.fire_sparking;
+
+    /* Sparkle */
+    JsonObject &sparkle = json.createNestedObject("sparkle");
+    sparkle["fps"] = config.sparkle_fps;
+    sparkle["cooling"] = config.sparkle_cooling;
+    sparkle["twinkle"] = config.sparkle_twinkle;
+    sparkle["flicker"] = config.sparkle_flicker;
+    sparkle["bpm"] = config.sparkle_bpm;
+    sparkle["hue"] = config.sparkle_hue;
 
     if (pretty)
         json.prettyPrintTo(jsonString);
@@ -617,10 +741,10 @@ void loop() {
       //keep feeding server so we don't overrun with packets
       e131.parsePacket();
     
+      uint16_t num_pixels;
       switch(config.testmode){
 
         case TestMode::NOISEMATRIX:
-          //run noise matrix
           
           if(millis() - testing.last > (1000 / config.matrix_fps)){
             //time for new step
@@ -657,6 +781,123 @@ void loop() {
         #endif 
           }
         break;
+
+case TestMode::FIRE:
+
+          
+          if(millis() - testing.last > (1000 / config.fire_fps)){
+            //time for new step
+            testing.last = millis();
+
+          // call customized FastLed-routine and build a single frame
+          backup_fire.getFrame();
+          num_pixels = config.channel_count/3;
+          
+        #if defined(ESPS_MODE_PIXEL)    
+            // now copy the FastLed frame to PixelDriver
+
+            num_pixels = config.channel_count/3;
+            for (int i = 0 ; i < num_pixels ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_fire.leds[i].r);
+              pixels.setValue(ch_offset++, backup_fire.leds[i].g);
+              pixels.setValue(ch_offset, backup_fire.leds[i].b);  
+            }
+        
+        #elif defined(ESPS_MODE_SERIAL)
+            
+            // ++ check if NUM_LEDS exceeds Pixel count !
+            for (int i = 0 ; i < NUM_LEDS ; i++)
+            {
+              LOG_PORT.print(leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].b);
+              LOG_PORT.println(" - ");
+            }
+        #endif 
+          }
+        break;
+
+case TestMode::SPARKLE:
+          
+          if(millis() - testing.last > (1000 / config.sparkle_fps)){
+            //time for new step
+            testing.last = millis();
+
+          // call customized FastLed-routine and build a single frame
+          backup_sparkle.getFrame();
+          num_pixels = config.channel_count/3;
+        #if defined(ESPS_MODE_PIXEL)    
+            // now copy the FastLed frame to PixelDriver
+                        
+            for (int i = 0 ; i < num_pixels ; i++)
+            {
+              int ch_offset = i*3;
+              pixels.setValue(ch_offset++, backup_sparkle.leds[i].r);
+              pixels.setValue(ch_offset++, backup_sparkle.leds[i].g);
+              pixels.setValue(ch_offset, backup_sparkle.leds[i].b);
+            }
+        
+        #elif defined(ESPS_MODE_SERIAL)
+            
+            // ++ check if NUM_LEDS exceeds Pixel count !
+            for (int i = 0 ; i < num_pixels ; i++)
+            {
+              LOG_PORT.print(leds[i].r);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].g);
+              LOG_PORT.print(" : ");
+              LOG_PORT.print(leds[i].b);
+              LOG_PORT.println(" - ");
+            }
+        #endif 
+          }
+        break;        
+        
+
+case TestMode::FALLBACK:
+          //run configured fallback animation
+          // Fire::
+          if(millis() - testing.last > (1000 / config.fire_fps))
+          {
+            //time for new step
+            testing.last = millis();
+            for (int vecpos = 0; vecpos < AnimationFire.size() ; vecpos++)
+            {
+              AnimationFire[vecpos].getFrame();
+              for (int i= AnimationFire[vecpos].led_offset ; i < AnimationFire[vecpos].led_offset + AnimationFire[vecpos].num_leds ; i++)
+              {
+                int ch_offset = i*3;
+                pixels.setValue(ch_offset++, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].r);
+                pixels.setValue(ch_offset++, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].g);
+                pixels.setValue(ch_offset, AnimationFire[vecpos].leds[i - AnimationFire[vecpos].led_offset].b); 
+              }
+            }  
+          }
+          // Fire::
+          if(millis() - testing.last2 > (1000 / config.sparkle_fps))
+          {
+            //time for new step
+            testing.last2 = millis();
+            for (int vecpos = 0; vecpos < AnimationSparkle.size() ; vecpos++)
+            {
+              AnimationSparkle[vecpos].getFrame();
+              for (int i= AnimationSparkle[vecpos].led_offset ; i < AnimationSparkle[vecpos].led_offset + AnimationSparkle[vecpos].num_leds ; i++)
+              {
+                int ch_offset = i*3;
+                pixels.setValue(ch_offset++, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].r);
+                pixels.setValue(ch_offset++, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].g);
+                pixels.setValue(ch_offset, AnimationSparkle[vecpos].leds[i - AnimationSparkle[vecpos].led_offset].b); 
+              }
+            }  
+          }          
+
+          
+        break;  
+
        
         case TestMode::STATIC: {
           

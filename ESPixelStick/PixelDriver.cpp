@@ -269,6 +269,8 @@ void PixelDriver::show() {
     sendPeriDMX();
 
     if (type == PixelType::WS2811) {
+
+      
         uart_buffer = pixdata;
         uart_buffer_tail = pixdata + szBuffer;
         SET_PERI_REG_MASK(UART_INT_ENA(1), UART_TXFIFO_EMPTY_INT_ENA);
