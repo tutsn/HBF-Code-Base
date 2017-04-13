@@ -10,6 +10,7 @@ Stepper leftStepper(stepsPerRevolution, 44, 42, 40, 38);
 const float stepToRev = 0.005; //(1 / stepsPerRevolution) * 200/60; // multiply by step period to get frequency in Herz ( (1 / stepsPerRevolution) * gearRatio)
 float gearRatio = 1;
 int stepSpeed = 2;
+std::vector<int> stepSpeeds;
 bool runLeftStepper = false;
 bool runRightStepper = false;
 long stepTimer = 0;
@@ -456,7 +457,6 @@ float rpmToHz(long rpm) {
   return (float)(rpm * (3.33) / 60);
 }
 
-
 void clearScreen(int row) {
 
   lcd.setCursor(0, row);
@@ -471,13 +471,27 @@ void requestEvent() {
 }
 
 void receiveEvent(int howMany) {
+  while (0 < Wire.available()) { // loop through all but the last
+    stepSpeeds.push_back((int)Wire.read()); // receive byte as a character
+  }
   stepSpeed = Wire.read();
   lcd.setCursor(8, 1);
-  lcd.print(rpmToHz(stepSpeed)); // revolutions per second
+  lcd.print(rpmToHz(stepSpeed[0])); // revolutions per second
   // while (1 < Wire.available()) { // loop through all but the last
   //   int x = Wire.read() * 4; // receive byte as a character
   //   Serial.print(c);         // print the character
   // }
   // int x = Wire.read();    // receive byte as an integer
-  Serial.println("I2C");         // print the integer
+  for(int i = 0; i < stepSpeed.size(); i++){
+    Serial.print(rpmToHz(stepSpeed[i]));         // print the integer
+    Serial.print(" "); 
+  }
+  Serial.println("I2C");
+
+  if(stepSpeed.size() != 2){
+    stepSpeeds.clear();
+    stepSpeeds.push_back(0);
+    stepSpeeds.push_back(0);
+    Serial.println("Not enough data from DMX! Set stepSpeeds to 0");
+  }
 }

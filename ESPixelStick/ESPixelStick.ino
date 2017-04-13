@@ -27,8 +27,8 @@
 //#define ESPS_MODE_SERIAL
 
 /* Fallback configuration if config.json is empty or fails */
-const char ssid[] = "capetown";
-const char passphrase[] = "strangersrest123";
+const char ssid[] = "Martina";
+const char passphrase[] = "0827778846";
 
 /*****************************************/
 /*         END - Configuration           */
@@ -57,10 +57,6 @@ extern "C" {
 
 uint8_t             *seqTracker;        /* Current sequence numbers for each Universe */
 uint32_t             lastUpdate;         /* Update timeout tracker */
-uint32_t           footStepTime[] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t          footStepDists[] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t            stairLinger[] = {0, 0, 0, 0, 0, 0, 0, 0};
-
 
 
 /* Forward Declarations */
@@ -411,8 +407,6 @@ void updateConfig() {
 
     /* Zero out packet stats */
     e131.stats.num_packets = 0;
-
-<<<<<<< HEAD
     /* Send Animation config Data to PixelDriver */
     if (config.ultrasonic) {
         LOG_PORT.println(F("Ultrasonic ON"));
@@ -423,8 +417,9 @@ void updateConfig() {
     }
     config.peri_universe = 3;
     config.num_peri_dimmers = 1;
-=======
->>>>>>> backup_stairs-animation
+
+    // Load stair config data into Pixel Driver
+    pixels.stairPixelData = {config.num_stairs, config.step_length, config.num_pixels, config.trigger_dist};
 
     /* Initialize for our pixel type */
 #if defined(ESPS_MODE_PIXEL)
@@ -717,7 +712,7 @@ void loop() {
                     buffloc = config.channel_start - 1;
                 }  
 
-                if (e131.universe == config.peri_universe){
+                if (config.use_peripherial_dmx == true && e131.universe == config.peri_universe){
                     for (int i = dataStart; i < dataStart + config.num_peri_dimmers; i++) {
                         pixels.peri_dimmer = e131.data[buffloc];
                         buffloc++;

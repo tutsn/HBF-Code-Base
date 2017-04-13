@@ -306,6 +306,7 @@ uint8_t* PixelDriver::getData() {
 void PixelDriver::sendPeriDMX(){
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(peri_dimmer);              // sends one byte
+    Wire.write(peri_dimmer);              // sends one byte
     LOG_PORT.print("Sent Peri ");
     LOG_PORT.println(peri_dimmer);
     Wire.endTransmission();    // stop transmitting

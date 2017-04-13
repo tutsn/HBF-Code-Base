@@ -1,11 +1,11 @@
 {
   "network": {
-    "ssid": "",
-    "passphrase": "",
+    "ssid": "Martina",
+    "passphrase": "0827778846",
     "ip": [
       192,
       168,
-      1,
+      10,
       11
     ],
     "netmask": [
@@ -17,7 +17,7 @@
     "gateway": [
       192,
       168,
-      1,
+      10,
       1
     ],
     "dhcp": false,
