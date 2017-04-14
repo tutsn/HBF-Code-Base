@@ -340,7 +340,66 @@ function getConfig(data) {
 		$('#hbf_fb_numleds_4').val(config.fallback.fb_numleds[3]);   
 		$('#hbf_fb_offset_4').val(config.fallback.fb_offset[3]);   
 		$('#hbf_fb_reverse_4').prop('checked', config.fallback.fb_reverse[3]); 						      
-				
+
+		$('#hbf_fb_mode_5').val(config.fallback.fb_mode[4]);
+		$('#hbf_fb_numleds_5').val(config.fallback.fb_numleds[4]);   
+		$('#hbf_fb_offset_5').val(config.fallback.fb_offset[4]);   
+		$('#hbf_fb_reverse_5').prop('checked', config.fallback.fb_reverse[4]);
+    
+		$('#hbf_fb_mode_6').val(config.fallback.fb_mode[5]);
+		$('#hbf_fb_numleds_6').val(config.fallback.fb_numleds[5]);   
+		$('#hbf_fb_offset_6').val(config.fallback.fb_offset[5]);   
+		$('#hbf_fb_reverse_6').prop('checked', config.fallback.fb_reverse[5]);
+    
+		$('#hbf_fb_mode_7').val(config.fallback.fb_mode[6]);
+		$('#hbf_fb_numleds_7').val(config.fallback.fb_numleds[6]);   
+		$('#hbf_fb_offset_7').val(config.fallback.fb_offset[6]);   
+		$('#hbf_fb_reverse_7').prop('checked', config.fallback.fb_reverse[6]);
+    
+		$('#hbf_fb_mode_8').val(config.fallback.fb_mode[7]);
+		$('#hbf_fb_numleds_8').val(config.fallback.fb_numleds[7]);   
+		$('#hbf_fb_offset_8').val(config.fallback.fb_offset[7]);   
+		$('#hbf_fb_reverse_8').prop('checked', config.fallback.fb_reverse[7]);
+    
+		$('#hbf_fb_mode_9').val(config.fallback.fb_mode[8]);
+		$('#hbf_fb_numleds_9').val(config.fallback.fb_numleds[8]);   
+		$('#hbf_fb_offset_9').val(config.fallback.fb_offset[8]);   
+		$('#hbf_fb_reverse_9').prop('checked', config.fallback.fb_reverse[8]);
+    
+		$('#hbf_fb_mode_10').val(config.fallback.fb_mode[9]);
+		$('#hbf_fb_numleds_10').val(config.fallback.fb_numleds[9]);   
+		$('#hbf_fb_offset_10').val(config.fallback.fb_offset[9]);   
+		$('#hbf_fb_reverse_10').prop('checked', config.fallback.fb_reverse[9]);
+    
+		$('#hbf_fb_mode_11').val(config.fallback.fb_mode[10]);
+		$('#hbf_fb_numleds_11').val(config.fallback.fb_numleds[10]);   
+		$('#hbf_fb_offset_11').val(config.fallback.fb_offset[10]);   
+		$('#hbf_fb_reverse_11').prop('checked', config.fallback.fb_reverse[10]);
+    
+		$('#hbf_fb_mode_12').val(config.fallback.fb_mode[11]);
+		$('#hbf_fb_numleds_12').val(config.fallback.fb_numleds[11]);   
+		$('#hbf_fb_offset_12').val(config.fallback.fb_offset[11]);   
+		$('#hbf_fb_reverse_12').prop('checked', config.fallback.fb_reverse[11]);
+    
+		$('#hbf_fb_mode_13').val(config.fallback.fb_mode[12]);
+		$('#hbf_fb_numleds_13').val(config.fallback.fb_numleds[12]);   
+		$('#hbf_fb_offset_13').val(config.fallback.fb_offset[12]);   
+		$('#hbf_fb_reverse_13').prop('checked', config.fallback.fb_reverse[12]);
+    
+		$('#hbf_fb_mode_14').val(config.fallback.fb_mode[13]);
+		$('#hbf_fb_numleds_14').val(config.fallback.fb_numleds[13]);   
+		$('#hbf_fb_offset_14').val(config.fallback.fb_offset[13]);   
+		$('#hbf_fb_reverse_14').prop('checked', config.fallback.fb_reverse[13]);
+    
+		$('#hbf_fb_mode_15').val(config.fallback.fb_mode[14]);
+		$('#hbf_fb_numleds_15').val(config.fallback.fb_numleds[14]);   
+		$('#hbf_fb_offset_15').val(config.fallback.fb_offset[14]);   
+		$('#hbf_fb_reverse_15').prop('checked', config.fallback.fb_reverse[14]);
+    
+		$('#hbf_fb_mode_16').val(config.fallback.fb_mode[15]);
+		$('#hbf_fb_numleds_16').val(config.fallback.fb_numleds[15]);   
+		$('#hbf_fb_offset_16').val(config.fallback.fb_offset[15]);   
+		$('#hbf_fb_reverse_16').prop('checked', config.fallback.fb_reverse[15]);                                            				
 		
 		// fetch ultrasonic sensors
 		$('#hbf_ultrasonic').prop('checked', config.hbf.ultrasonic);
@@ -534,10 +593,10 @@ function submitConfig() {
             		'ultrasonic': $('#hbf_ultrasonic').prop('checked')            		
             },
             'fallback': {
-            		'fb_mode': [parseInt($('#hbf_fb_mode_1').val()), parseInt($('#hbf_fb_mode_2').val()), parseInt($('#hbf_fb_mode_3').val()), parseInt($('#hbf_fb_mode_4').val())],
-            		'fb_numleds': [parseInt($('#hbf_fb_numleds_1').val()), parseInt($('#hbf_fb_numleds_2').val()), parseInt($('#hbf_fb_numleds_3').val()), parseInt($('#hbf_fb_numleds_4').val())],
-            		'fb_offset': [parseInt($('#hbf_fb_offset_1').val()), parseInt($('#hbf_fb_offset_2').val()),parseInt($('#hbf_fb_offset_3').val()),parseInt($('#hbf_fb_offset_4').val())],
-            		'fb_reverse': [$('#hbf_fb_reverse_1').prop('checked'), $('#hbf_fb_reverse_2').prop('checked'), $('#hbf_fb_reverse_3').prop('checked'), $('#hbf_fb_reverse_4').prop('checked')]					
+            		'fb_mode': [parseInt($('#hbf_fb_mode_1').val()), parseInt($('#hbf_fb_mode_2').val()), parseInt($('#hbf_fb_mode_3').val()), parseInt($('#hbf_fb_mode_4').val()), parseInt($('#hbf_fb_mode_5').val()), parseInt($('#hbf_fb_mode_6').val()), parseInt($('#hbf_fb_mode_7').val()), parseInt($('#hbf_fb_mode_8').val()), parseInt($('#hbf_fb_mode_9').val()), parseInt($('#hbf_fb_mode_10').val()), parseInt($('#hbf_fb_mode_11').val()), parseInt($('#hbf_fb_mode_12').val()), parseInt($('#hbf_fb_mode_13').val()), parseInt($('#hbf_fb_mode_14').val()), parseInt($('#hbf_fb_mode_15').val()), parseInt($('#hbf_fb_mode_16').val())],
+            		'fb_numleds': [parseInt($('#hbf_fb_numleds_1').val()), parseInt($('#hbf_fb_numleds_2').val()), parseInt($('#hbf_fb_numleds_3').val()), parseInt($('#hbf_fb_numleds_4').val()), parseInt($('#hbf_fb_numleds_5').val()), parseInt($('#hbf_fb_numleds_6').val()), parseInt($('#hbf_fb_numleds_7').val()), parseInt($('#hbf_fb_numleds_8').val()), parseInt($('#hbf_fb_numleds_9').val()), parseInt($('#hbf_fb_numleds_10').val()), parseInt($('#hbf_fb_numleds_11').val()), parseInt($('#hbf_fb_numleds_12').val()), parseInt($('#hbf_fb_numleds_13').val()), parseInt($('#hbf_fb_numleds_14').val()), parseInt($('#hbf_fb_numleds_15').val()), parseInt($('#hbf_fb_numleds_16').val())],
+            		'fb_offset': [parseInt($('#hbf_fb_offset_1').val()), parseInt($('#hbf_fb_offset_2').val()),parseInt($('#hbf_fb_offset_3').val()),parseInt($('#hbf_fb_offset_4').val()), parseInt($('#hbf_fb_offset_5').val()), parseInt($('#hbf_fb_offset_6').val()), parseInt($('#hbf_fb_offset_7').val()), parseInt($('#hbf_fb_offset_8').val()), parseInt($('#hbf_fb_offset_9').val()), parseInt($('#hbf_fb_offset_10').val()), parseInt($('#hbf_fb_offset_11').val()), parseInt($('#hbf_fb_offset_12').val()), parseInt($('#hbf_fb_offset_13').val()), parseInt($('#hbf_fb_offset_14').val()), parseInt($('#hbf_fb_offset_15').val()), parseInt($('#hbf_fb_offset_16').val())],
+            		'fb_reverse': [$('#hbf_fb_reverse_1').prop('checked'), $('#hbf_fb_reverse_2').prop('checked'), $('#hbf_fb_reverse_3').prop('checked'), $('#hbf_fb_reverse_4').prop('checked'), $('#hbf_fb_reverse_5').prop('checked'), $('#hbf_fb_reverse_6').prop('checked'), $('#hbf_fb_reverse_7').prop('checked'), $('#hbf_fb_reverse_8').prop('checked'), $('#hbf_fb_reverse_9').prop('checked'), $('#hbf_fb_reverse_10').prop('checked'), $('#hbf_fb_reverse_11').prop('checked'), $('#hbf_fb_reverse_12').prop('checked'), $('#hbf_fb_reverse_13').prop('checked'), $('#hbf_fb_reverse_14').prop('checked'), $('#hbf_fb_reverse_15').prop('checked'), $('#hbf_fb_reverse_16').prop('checked')]					
 						}
             
         };
