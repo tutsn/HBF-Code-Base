@@ -32,6 +32,12 @@ void Sparkle::setEnvironment(uint16_t conf_numberof_leds, uint16_t conf_led_offs
   LEDS.addLeds<WS2811,5,GRB>(this->leds, this->num_leds);   
 }
 
+void Sparkle::fuckupEnvironment()
+{
+  free(this->heat);
+  free(this->leds); 
+}
+
 void Sparkle::updateConfig(uint16_t conf_sparkle_fps, uint8_t conf_cooling, uint8_t conf_twinkling, uint8_t conf_flicker, uint16_t conf_sparkle_bpm, uint16_t conf_sparkle_hue)
 {
   this->cooling = conf_cooling;
@@ -155,7 +161,7 @@ void Sparkle::Sparkling() {
 
 void Sparkle::getFrame()
 {
-    if (this->loops == 0 && this->beatStarted == false) {
+    if (this->beatStarted == false) {
       this->nextBeat = millis();
       this->beatStarted == true;
       this->Sparkling();

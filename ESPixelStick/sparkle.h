@@ -7,6 +7,7 @@ class Sparkle{
     void updateConfig(uint16_t conf_sparkle_fps, uint8_t conf_cooling, uint8_t conf_twinkling, uint8_t conf_flicker, uint16_t conf_sparkle_bpm, uint16_t conf_sparkle_hue);
     void setEnvironment(uint16_t conf_numberof_leds, uint16_t conf_led_offset, bool conf_led_reverse);
     void getFrame();
+    void fuckupEnvironment();
 
     CRGB *leds;
     

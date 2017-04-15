@@ -69,5 +69,12 @@ void Fire::getFrame()
       }
       this->leds[pixelnumber] = color;
     }
+
+}
+
+void Fire::fuckupEnvironment()
+{
+  free(this->heat);
+  free(this->leds); 
 }
 

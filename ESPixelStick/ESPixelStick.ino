@@ -145,78 +145,17 @@ void setup() {
     }
 
     /* Configure the outputs */
-#if defined (ESPS_MODE_PIXEL)
-    pixels.setPin(DATA_PIN);
-    updateConfig();
-    pixels.show();
-#else
-    updateConfig();
-#endif
+    #if defined (ESPS_MODE_PIXEL)
+        pixels.setPin(DATA_PIN);
+        updateConfig();
+        pixels.show();
+    #else
+        updateConfig();
+    #endif
 
 
 
-// testing looped setup of backup animation objects
-for (int i = 0 ; i < 16 ; i++)
-{
-  LOG_PORT.print("setting up animation slot nr ");  
-  LOG_PORT.print(i);
-  LOG_PORT.print(": ");
-  int slotmode = (static_cast<uint8_t>(config.fb_mode[i]));
-
-  switch(config.fb_mode[i])
-  {
-    case NeopixelMode::disabled:
-      LOG_PORT.println("disabled");
-    break;
-
-    case NeopixelMode::Fire:
-      LOG_PORT.print("Fire --> num_leds: ");
-      LOG_PORT.print(config.fb_numleds[i]);
-      LOG_PORT.print(" / offset: ");
-      LOG_PORT.print(config.fb_offset[i]);
-      LOG_PORT.print(" / direction: ");
-      LOG_PORT.println(config.fb_reverse[i]);
-      
-      AnimationFire.push_back(Fire());
-
-      LOG_PORT.print("-- Fire vector size ");
-      LOG_PORT.println(AnimationFire.size());  
-
-      AnimationFire.back().setupAnimation(config.fire_cooling, config.fire_sparking);
-      AnimationFire.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);
-    
-    break;
-
-    case NeopixelMode::Sparkle:
-      LOG_PORT.print("Sparkle --> num_leds: ");
-      LOG_PORT.print(config.fb_numleds[i]);
-      LOG_PORT.print(" / offset: ");
-      LOG_PORT.print(config.fb_offset[i]);
-      LOG_PORT.print(" / direction: ");
-      LOG_PORT.println(config.fb_reverse[i]);  
-
-      AnimationSparkle.push_back(Sparkle());
-
-      LOG_PORT.print("-- Sparkle vector size ");
-      LOG_PORT.println(AnimationSparkle.size()); 
-
-      AnimationSparkle.back().setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
-      AnimationSparkle.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);       
-               
-    break;
-
-    case NeopixelMode::Other:
-      LOG_PORT.print("Other --> num_leds: ");
-      LOG_PORT.print(config.fb_numleds[i]);
-      LOG_PORT.print(" / offset: ");
-      LOG_PORT.print(config.fb_offset[i]);
-      LOG_PORT.print(" / direction: ");
-      LOG_PORT.println(config.fb_reverse[i]);      
-    break;            
-  }  
-
-}
-
+  
 
 // setup the FastLed fallback animations when in WS2812 mode
     fastled_setup(config.channel_count / 3);
@@ -226,10 +165,110 @@ for (int i = 0 ; i < 16 ; i++)
     backup_fire.setEnvironment(config.channel_count/3, 0, false);    
     backup_sparkle.setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
     backup_sparkle.setEnvironment(config.channel_count/3, 0, false);
+   
+    setupBackupAnimations();
 
     // set D3 to OUTPUT LOW to open the LLS and show status led 
     pinMode(D3, OUTPUT);
     digitalWrite(D3, LOW);
+}
+
+/////////////////////////////////////////////
+// update backup animations
+/////////////////////////////////////////////
+void updateBackupanimations()
+{
+    if (AnimationFire.size() >0)
+    {
+      LOG_PORT.print("Fuckup Fire! Size: ");
+      LOG_PORT.println(AnimationFire.size());
+      
+      for (int fu=0;fu < AnimationFire.size() ; fu++)
+      {
+        AnimationFire[fu].fuckupEnvironment();   
+      }
+      AnimationFire.clear();
+    }
+    if (AnimationSparkle.size() >0)
+    {
+      LOG_PORT.print("Fuckup Sparkle! Size: ");
+      LOG_PORT.println(AnimationSparkle.size());
+      
+      for (int fu=0;fu < AnimationSparkle.size() ; fu++)
+      {
+        AnimationSparkle[fu].fuckupEnvironment();   
+      }
+      AnimationSparkle.clear();
+    }
+    setupBackupAnimations();    
+     
+    
+}
+
+/////////////////////////////////////////////
+// setup backup animations
+/////////////////////////////////////////////
+void setupBackupAnimations()
+{
+// testing looped setup of backup animation objects
+    for (int i = 0 ; i < 16 ; i++)
+    {
+      LOG_PORT.print("setting up animation slot nr ");  
+      LOG_PORT.print(i);
+      LOG_PORT.print(": ");
+      int slotmode = (static_cast<uint8_t>(config.fb_mode[i]));
+    
+      switch(config.fb_mode[i])
+      {
+        case NeopixelMode::disabled:
+          LOG_PORT.println("disabled");
+        break;
+    
+        case NeopixelMode::Fire:
+          LOG_PORT.print("Fire --> num_leds: ");
+          LOG_PORT.print(config.fb_numleds[i]);
+          LOG_PORT.print(" / offset: ");
+          LOG_PORT.print(config.fb_offset[i]);
+          LOG_PORT.print(" / direction: ");
+          LOG_PORT.println(config.fb_reverse[i]);
+          
+          AnimationFire.push_back(Fire());
+    
+          LOG_PORT.print("-- Fire vector size ");
+          LOG_PORT.println(AnimationFire.size());  
+    
+          AnimationFire.back().setupAnimation(config.fire_cooling, config.fire_sparking);
+          AnimationFire.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);
+        
+        break;
+    
+        case NeopixelMode::Sparkle:  
+          LOG_PORT.print("Sparkle --> num_leds: ");
+          LOG_PORT.print(config.fb_numleds[i]);
+          LOG_PORT.print(" / offset: ");
+          LOG_PORT.print(config.fb_offset[i]);
+          LOG_PORT.print(" / direction: ");
+          LOG_PORT.println(config.fb_reverse[i]);  
+    
+          AnimationSparkle.push_back(Sparkle());
+    
+          LOG_PORT.print("-- Sparkle vector size ");
+          LOG_PORT.println(AnimationSparkle.size()); 
+    
+          AnimationSparkle.back().setupAnimation(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+          AnimationSparkle.back().setEnvironment(config.fb_numleds[i], config.fb_offset[i], config.fb_reverse[i]);       
+        break;
+    
+        case NeopixelMode::Other:        
+          LOG_PORT.print("Other --> num_leds: ");
+          LOG_PORT.print(config.fb_numleds[i]);
+          LOG_PORT.print(" / offset: ");
+          LOG_PORT.print(config.fb_offset[i]);
+          LOG_PORT.print(" / direction: ");
+          LOG_PORT.println(config.fb_reverse[i]);      
+        break;            
+      }   
+    }
 }
 
 int initWifi() {
@@ -418,6 +457,8 @@ void updateConfig() {
 
     backup_fire.updateConfig(config.fire_cooling, config.fire_sparking, false);
     backup_sparkle.updateConfig(config.sparkle_fps, config.sparkle_cooling, config.sparkle_twinkle, config.sparkle_flicker, config.sparkle_bpm, config.sparkle_hue);
+
+    updateBackupanimations();
 }
 
 /* De-Serialize Network config */
@@ -719,13 +760,14 @@ void loop() {
 
           // call customized FastLed-routine and build a single frame
           stairs_matrix(config.matrix_spp);
+          num_pixels = config.channel_count/3;
           
         #if defined(ESPS_MODE_PIXEL)    
             // now copy the FastLed frame to PixelDriver
             // NUM_LEDS comes from FastLed-routine btw.
 
             // ++ check if NUM_LEDS exceeds Pixel count ! 
-            for (int i = 0 ; i < NUM_LEDS ; i++)
+            for (int i = 0 ; i < num_pixels ; i++)
             {
               int ch_offset = i*3;
               pixels.setValue(ch_offset++, leds[i].r);
@@ -736,7 +778,7 @@ void loop() {
         #elif defined(ESPS_MODE_SERIAL)
             
             // ++ check if NUM_LEDS exceeds Pixel count !
-            for (int i = 0 ; i < NUM_LEDS ; i++)
+            for (int i = 0 ; i < num_pixels ; i++)
             {
               LOG_PORT.print(leds[i].r);
               LOG_PORT.print(" : ");

@@ -6,7 +6,10 @@ class Fire{
     void setupAnimation(uint8_t conf_cooling, uint8_t conf_sparking);
     void updateConfig(uint8_t conf_cooling, uint8_t conf_sparking, bool conf_led_reverse);
     void setEnvironment(uint16_t conf_numberof_leds, uint16_t conf_led_offset, bool conf_led_reverse);
+    void fuckupEnvironment();
     void getFrame();
+
+    
     CRGB *leds;
     
     uint8_t animation_mode = 0;
