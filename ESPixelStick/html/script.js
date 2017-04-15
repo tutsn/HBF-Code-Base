@@ -409,6 +409,15 @@ function getConfig(data) {
     $('#hbf_matrix_ydim').val(config.noisematrix.ydim);    
 		$('#hbf_matrix_fps').val(config.noisematrix.fps);
 		$('#hbf_matrix_spp').val(config.noisematrix.spp); 
+		$('#hbf_matrix_scale').val(config.noisematrix.scale);
+		$('#hbf_matrix_speed').val(config.noisematrix.speed); 
+    
+    // Stairs
+    $('#hbf_stairs_length').val(config.stairs.leng);    
+    $('#hbf_stairs_triggerdist').val(config.stairs.triggerdist);    
+		$('#hbf_stairs_periphal_dmx').prop('checked', config.stairs.peridmx);		
+		$('#hbf_stairs_periuniverse').val(config.stairs.periuniverse); 
+		$('#hbf_stairs_peridimmers').val(config.stairs.peridimmers);
 		
     // Fire 
     $('#hbf_fire_fps').val(config.fire.fps);    
@@ -430,6 +439,7 @@ function getConfig(data) {
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
 				$('#o_noisematrix').removeClass('hidden');
+				$('#o_stairs').removeClass('hidden');
 				$('#o_fire').removeClass('hidden');
 				$('#o_sparkle').removeClass('hidden');      
 				$('#o_fallback').removeClass('hidden');				          
@@ -458,6 +468,7 @@ function getConfig(data) {
         mode = 'serial';
         $('#o_serial').removeClass('hidden');
         $('#o_noisematrix').removeClass('hidden');
+        $('#o_stairs').removeClass('hidden');
 				$('#o_fire').removeClass('hidden');   
 				$('#o_sparkle').removeClass('hidden');
 				$('#o_fallback').removeClass('hidden');				
@@ -574,7 +585,16 @@ function submitConfig() {
             		'xdim': parseInt($('#hbf_matrix_xdim').val()),
             		'ydim': parseInt($('#hbf_matrix_ydim').val()),            
                 'fps': parseInt($('#hbf_matrix_fps').val()),
-                'spp': parseInt($('#hbf_matrix_spp').val())
+                'spp': parseInt($('#hbf_matrix_spp').val()),
+                'scale': parseInt($('#hbf_matrix_scale').val()),
+                'speed': parseInt($('#hbf_matrix_speed').val())
+            },
+            'stairs': {
+            		'leng': parseInt($('#hbf_stairs_length').val()),
+            		'triggerdist': parseInt($('#hbf_stairs_triggerdist').val()),            
+                'peridmx': $('#hbf_stairs_periphal_dmx').prop('checked'),                
+                'periuniverse': parseInt($('#hbf_stairs_periuniverse').val()),
+                'peridimmers': parseInt($('#hbf_stairs_peridimmers').val())            
             },
             'fire': {
             		'fps': parseInt($('#hbf_fire_fps').val()),

@@ -198,34 +198,96 @@
       <fieldset>
         <legend class="esps-legend">HBF Configuration</legend>
         <form class="form-horizontal">
+        
+        <!--
           <div class="form-group">
             <label class="control-label col-sm-2" for="hbf_neopixel_mode">Neopixel Mode</label>
             <div class="col-sm-10">
               <select class="form-control" id="hbf_neopixel_mode" name="hbf_neopixel_mode"></select>
             </div>
           </div>
+        -->
+          
           <div class="form-group">
             <label class="control-label col-sm-2" for="t_mode">Fetch Ultrasonic (I2C)</label>
             <div class="col-sm-10">
             <div class="checkbox"><label><input type="checkbox" id="hbf_ultrasonic" name="hbf_ultrasonic"> Enable Ultrasonic Sensor Fetch via I2C</label></div>
             </div>
           </div>
+          
+          
+          
+          <!-- Stairs -->
+          <div id="o_stairs" class="odiv hidden">
+            <legend class="esps-legend">Stairs Configuration</legend>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_xdim">pixel per step</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_xdim" name="hbf_matrix_xdim" placeholder="width of matrix">
+              </div>
+            </div>   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_ydim">number of stairs</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_ydim" name="hbf_matrix_ydim" placeholder="height of matrix">
+              </div>
+            </div>                           
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_stairs_length">Step length in cm</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_stairs_length" name="hbf_stairs_length" placeholder="length of step in cm">
+              </div>
+            </div>   
+           <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_stairs_triggerdist">trigger dist in cm</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_stairs_triggerdist" name="hbf_stairs_triggerdist" placeholder="trigger dist in cm">
+              </div>
+            </div>  
+            
+            <legend class="esps-legend">Peripheral Universe</legend>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="t_mode">use_peripherial_dmx</label>
+              <div class="col-sm-10">
+                <div class="checkbox"><label><input type="checkbox" id="hbf_stairs_periphal_dmx" name="hbf_stairs_periphal_dmx">use_peripherial_dmx</label></div>
+              </div>
+            </div>
+   
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_stairs_periuniverse">peri_universe</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_stairs_periuniverse" name="hbf_stairs_periuniverse" placeholder="peri_universe">
+              </div>
+            </div> 
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_stairs_peridimmers">num_peri_dimmers</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_stairs_peridimmers" name="hbf_stairs_peridimmers" placeholder="num_peri_dimmers">
+              </div>
+            </div>                           
+              
+          </div>            
+          
+          
                      
           <!-- NoiseMatrix -->
           <div id="o_noisematrix" class="odiv hidden">
             <legend class="esps-legend">NoiseMatrix Configuration</legend>
+            <!--
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_matrix_xdim">X Dimension (pixel per step)</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="hbf_matrix_xdim" name="hbf_matrix_xdim" placeholder="width of matrix">
               </div>
-            </div>   
+            </div> 
+              
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_matrix_ydim">Y Dimension (steps)</label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="hbf_matrix_ydim" name="hbf_matrix_ydim" placeholder="height of matrix">
               </div>
             </div>                           
+            -->
             <div class="form-group">
               <label class="control-label col-sm-2" for="hbf_matrix_fps">FPS</label>
               <div class="col-sm-10">
@@ -237,8 +299,24 @@
               <div class="col-sm-10">
                 <input type="text" class="form-control" id="hbf_matrix_spp" name="hbf_matrix_spp" placeholder="Seconds per palette">
               </div>
-            </div>                                  
+            </div>   
+            
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_scale">Scale</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_scale" name="hbf_matrix_scale" placeholder="Scale of Animation">
+              </div>
+            </div>   
+           <div class="form-group">
+              <label class="control-label col-sm-2" for="hbf_matrix_speed">Speed</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="hbf_matrix_speed" name="hbf_matrix_speed" placeholder="Speed of Animation">
+              </div>
+            </div>              
           </div>    
+          
+          
+          
           <!-- Fire -->
           <div id="o_fire" class="odiv hidden">
             <legend class="esps-legend">Fire Configuration</legend>

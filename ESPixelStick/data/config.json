@@ -55,7 +55,9 @@
     "xdim": 50,
     "ydim": 6,
     "fps": 25,
-    "spp": 10
+    "spp": 10,
+    "scale": 20,
+    "speed": 1
   },
   
   "fire": {
@@ -70,6 +72,13 @@
     "flicker": 100,
     "bpm": 150,
     "hue": 0
-  }   
+  },
+  "stairs": {
+    "leng": 100,
+    "triggerdist": 0,
+    "peridmx": false,
+    "periuniverse": 0,
+    "peridimmers": 0
+  }    
   
 }

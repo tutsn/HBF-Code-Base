@@ -511,6 +511,8 @@ void dsDeviceConfig(JsonObject &json) {
     config.matrix_ydim = json["noisematrix"]["ydim"];    
     config.matrix_fps = json["noisematrix"]["fps"];
     config.matrix_spp = json["noisematrix"]["spp"];
+    config.matrix_scale = json["noisematrix"]["scale"];
+    config.matrix_speed = json["noisematrix"]["speed"];    
 
     /* Fire */
     config.fire_fps = json["fire"]["fps"];
@@ -523,7 +525,18 @@ void dsDeviceConfig(JsonObject &json) {
     config.sparkle_twinkle = json["sparkle"]["twinkle"]; 
     config.sparkle_flicker = json["sparkle"]["flicker"];
     config.sparkle_bpm = json["sparkle"]["bpm"];
-    config.sparkle_hue = json["sparkle"]["hue"];            
+    config.sparkle_hue = json["sparkle"]["hue"];       
+
+    /* Stairs */
+    config.num_stairs = json["noisematrix"]["ydim"];                          
+    config.step_length = json["stairs"]["leng"];                       
+    config.num_pixels = json["noisematrix"]["xdim"];                          
+    config.trigger_dist = json["stairs"]["triggerdist"];                        
+
+    /* Peripheral Universe */
+    config.use_peripherial_dmx = json["stairs"]["peridmx"];                
+    config.peri_universe = json["stairs"]["periuniverse"];                       
+    config.num_peri_dimmers = json["stairs"]["peridimmers"];                   
 
 #if defined(ESPS_MODE_PIXEL)
     /* Pixel */
@@ -631,6 +644,15 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     /* Fetch Ultrasonic */
     hbf["ultrasonic"] = config.ultrasonic;
 
+    /* Stairs */
+    JsonObject &stairs = json.createNestedObject("stairs");
+    stairs["leng"] = config.step_length;
+    stairs["triggerdist"] = config.trigger_dist;
+    stairs["peridmx"] = config.use_peripherial_dmx;
+    stairs["periuniverse"] = config.peri_universe;
+    stairs["peridimmers"] = config.num_peri_dimmers;
+    
+
     /* Fallback Mode */
     JsonObject &fallback = json.createNestedObject("fallback");
     JsonArray &fb_mode = fallback.createNestedArray("fb_mode");
@@ -650,6 +672,8 @@ void serializeConfig(String &jsonString, bool pretty, bool creds) {
     noisematrix["ydim"] = config.matrix_ydim;
     noisematrix["fps"] = config.matrix_fps;
     noisematrix["spp"] = config.matrix_spp;
+    noisematrix["scale"] = config.matrix_scale;
+    noisematrix["speed"] = config.matrix_speed;    
 
     /* Fire */
     JsonObject &fire = json.createNestedObject("fire");

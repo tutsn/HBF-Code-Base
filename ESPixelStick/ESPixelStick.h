@@ -118,9 +118,18 @@ typedef struct {
     /* HBF */
     /* Fetch Ultrasonic on/off */
     bool        ultrasonic;
-    NeopixelMode  neopixel_mode;
+    uint16_t    num_stairs;                          // Number of stairs with pixels and sonar // -> get this from matrix_ydim
+    uint16_t    step_length;                         // Length of step in cm 
+    uint16_t    num_pixels;                          // Number of pixels per step // -> get this from matrix_xdim
+    uint16_t    trigger_dist;                        // In cm
+
+    /* Peripheral Universe */
+    bool        use_peripherial_dmx;                 // Default = False
+    uint16_t    peri_universe;                       /* Default = 0. Peripheral universe to listen for */
+    uint16_t    num_peri_dimmers;                    // Default = 0. 
 
     /* Fallback Modes */
+    NeopixelMode  neopixel_mode;
     NeopixelMode fb_mode[16];
     uint16_t    fb_numleds[16];
     uint16_t    fb_offset[16];
@@ -131,6 +140,8 @@ typedef struct {
     uint16_t    matrix_ydim;
     uint16_t    matrix_fps;
     uint16_t    matrix_spp;
+    uint16_t    matrix_scale;
+    uint16_t    matrix_speed;   
 
     /* Fire */
     uint16_t    fire_fps;
