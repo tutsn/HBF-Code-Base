@@ -266,7 +266,19 @@ void PixelDriver::show() {
         waterStairs();        
     }
 
-    sendPeriDMX();
+    if(peri_dimmer.size() != peri_dimmer_prev.size()){
+        peri_dimmer_prev = peri_dimmer;
+    }
+
+    bool sendPeri = false;
+    for(int i = 0; i < peri_dimmer.size(); i++){
+        if(peri_dimmer[i] != peri_dimmer_prev[i])
+            sendPeri = true;
+    }
+    peri_dimmer_prev = peri_dimmer;
+
+    if(sendPeri)
+        sendPeriDMX();
 
     if (type == PixelType::WS2811) {
         uart_buffer = pixdata;
@@ -303,9 +315,12 @@ uint8_t* PixelDriver::getData() {
 
 void PixelDriver::sendPeriDMX(){
     Wire.beginTransmission(8); // transmit to device #8
-    Wire.write(peri_dimmer);              // sends one byte
-    LOG_PORT.print("Sent Peri ");
-    LOG_PORT.println(peri_dimmer);
+    for(int i = 0; i < peri_dimmer.size(); i++){
+        Wire.write(peri_dimmer[i]);              // sends one byte
+        LOG_PORT.println(peri_dimmer[i]);
+    }   
+    // LOG_PORT.print("Sent Peri ");
+    // LOG_PORT.println(peri_dimmer);
     Wire.endTransmission();    // stop transmitting
 }
 
@@ -366,7 +381,7 @@ void PixelDriver::setStairPixelGains(int stairNum, std::vector<float> gainArray)
 }
 
 void PixelDriver::waterStairs(){
-    waterAnimation.oscillationRate = 50 * (float)peri_dimmer/255;
+    waterAnimation.oscillationRate = 50 * (float)peri_dimmer[0]/255.0;
     std::vector<float> gains;
     for(int stNr = 0; stNr < stairPixelData.numStairs; stNr++){
         if (millis() - stepData[stNr].footStepTime < waterAnimation.maxTime){

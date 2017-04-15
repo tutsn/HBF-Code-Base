@@ -105,8 +105,15 @@ typedef struct {
     /* HBF */
     /* Fetch Ultrasonic on/off */
     bool        ultrasonic;
-    uint16_t    peri_universe;       /* Universe to listen for */
-    uint16_t    num_peri_dimmers;
+    uint16_t    num_stairs;                          // Number of stairs with pixels and sonar 
+    uint16_t    step_length;                         // Length of step in cm 
+    uint16_t    num_pixels;                          // Number of pixels per step
+    uint16_t    trigger_dist;                        // In cm
+
+    /* Peripheral Universe */
+    bool        use_peripherial_dmx;    // Default = False
+    uint16_t    peri_universe;          /* Default = 0. Peripheral universe to listen for */
+    uint16_t    num_peri_dimmers;       // Default = 0. 
 
     /* NOISEMATRIX */
     uint16_t    matrix_xdim;

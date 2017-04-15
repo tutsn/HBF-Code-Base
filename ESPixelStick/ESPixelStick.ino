@@ -55,9 +55,6 @@ extern "C" {
 
 uint8_t             *seqTracker;        /* Current sequence numbers for each Universe */
 uint32_t             lastUpdate;         /* Update timeout tracker */
-uint32_t           footStepTime[] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t          footStepDists[] = {0, 0, 0, 0, 0, 0, 0, 0};
-uint32_t            stairLinger[] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 
 
@@ -352,7 +349,10 @@ void updateConfig() {
         pixels.ultrasonic = false;
     }
     config.peri_universe = 3;
-    config.num_peri_dimmers = 1;
+    config.num_peri_dimmers = 2;
+
+    // Load stair config data into Pixel Driver
+    pixels.stairPixelData = {config.num_stairs, config.step_length, config.num_pixels, config.trigger_dist};
 
     /* Initialize for our pixel type */
 #if defined(ESPS_MODE_PIXEL)
@@ -593,9 +593,10 @@ void loop() {
                     buffloc = config.channel_start - 1;
                 }  
 
+                pixels.peri_dimmer.clear();
                 if (e131.universe == config.peri_universe){
                     for (int i = dataStart; i < dataStart + config.num_peri_dimmers; i++) {
-                        pixels.peri_dimmer = e131.data[buffloc];
+                        pixels.peri_dimmer.push_back(e131.data[buffloc]);
                         buffloc++;
                     }
                 }

@@ -119,7 +119,8 @@ class PixelDriver {
     stairPixelData_t     stairPixelData = {2, 100, 60, 80};     
     waterAnimation_t     waterAnimation = {0.1, 1, 1, 5000};
     bool                    ultrasonic = false;
-    uint8_t                peri_dimmer = 10;
+    std::vector<uint8_t>                peri_dimmer;
+    std::vector<uint8_t>                peri_dimmer_prev;
 
     int begin();
     int begin(PixelType type);
