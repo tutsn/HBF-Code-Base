@@ -1,15 +1,21 @@
 #include <Stepper.h>
 #include <LiquidCrystal.h>
 #include <Wire.h>
+#include <AccelStepper.h>
 
 //Steppers
 const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
 const int stepsPerClockRevolution = 200;
-Stepper rightStepper(stepsPerRevolution, 45, 43, 41, 39);
-Stepper leftStepper(stepsPerRevolution, 44, 42, 40, 38);
+// Stepper rightStepper(stepsPerRevolution, 45, 43, 41, 39);
+// Stepper leftStepper(stepsPerRevolution, 44, 42, 40, 38);
+
+AccelStepper rightStepper(AccelStepper::FULL4WIRE, 45, 43, 41, 39);
+AccelStepper leftStepper(AccelStepper::FULL4WIRE, 44, 42, 40, 38);
+
 const float stepToRev = 0.005; //(1 / stepsPerRevolution) * 200/60; // multiply by step period to get frequency in Herz ( (1 / stepsPerRevolution) * gearRatio)
 float gearRatio = 1;
 int stepSpeed = 2;
+float stepSpeeds [2] = {0.0, 0.0};
 bool runLeftStepper = false;
 bool runRightStepper = false;
 long stepTimer = 0;
@@ -21,6 +27,7 @@ int posList [3] = {0, 0, 0};   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 int posListCount = 0;
 int rmPos = 0;
 int stepDir = -1;
+float maxSpeed = 1000.0;
 
 //LCD
 LiquidCrystal lcd(47, 49, 46, 48, 50, 52);
@@ -75,11 +82,16 @@ void setup() {
   pinMode(rsD3, INPUT);
 
   // set the speed at 60 rpm:
-  rightStepper.setSpeed(5);
-  leftStepper.setSpeed(5);
+  rightStepper.setMaxSpeed(5);
+  leftStepper.setMaxSpeed(5);
+  rightStepper.setAcceleration(100.0);
+  leftStepper.setAcceleration(100.0);
 
   doMenuToggle();
   doMenuSelect();
+
+  // Wire.begin(8);                // join i2c bus with address #8
+  // Wire.onReceive(receiveEvent);
 }
 
 void loop() {
@@ -99,7 +111,7 @@ void wonkyPos(int pos, int range) {
 
   int offset = pos - stepsToPos(lmStepCount, stepsPerClockRevolution);
 
-  leftStepper.step(stepDir);
+  leftStepper.setMaxSpeed(stepDir);
   lmStepCount = lmStepCount + stepDir;
 
   if (offset < -range)
@@ -153,7 +165,7 @@ void moveStepperToPos(int pos) {
   if (pos == rmStepPos) {
     //Do Nothing!
   } else {
-    rightStepper.step(-cyclicDiff(pos, rmStepPos));
+    rightStepper.moveTo(-cyclicDiff(pos, rmStepPos));
     rmStepCount = rmStepCount + cyclicDiff(pos, rmStepPos);
   }
 }
@@ -268,16 +280,18 @@ int recBinToDec(String prevBin) {
 }
 
 void doRunSteppers(int stepSize) {
-  rightStepper.setSpeed(stepSpeed);
-  leftStepper.setSpeed(stepSpeed);
+  // rightStepper.setMaxSpeed(stepSpeed);
+  // leftStepper.setMaxSpeed(stepSpeed);
   if (runLeftStepper == true) {
-     leftStepper.step(stepSize);
-    lmStepCount = lmStepCount + stepSize;
+    leftStepper.run();
+    // leftStepper.step(stepSize);
+    // lmStepCount = lmStepCount + stepSize;
   }
 
   if (runRightStepper == true) {
-    rightStepper.step(stepSize);
-    rmStepCount = rmStepCount + stepSize;
+    rightStepper.run();
+    // rightStepper.step(stepSize);
+    // rmStepCount = rmStepCount + stepSize;
   }
 }
 
@@ -379,8 +393,8 @@ void doMenuSelect () {
       lcd.print(rpmToHz(50)); // revolutions per second
       lcd.setCursor(14, 1);
       lcd.print("Hz");
-      rightStepper.setSpeed(50);
-      leftStepper.setSpeed(50);
+      rightStepper.setMaxSpeed(50);
+      leftStepper.setMaxSpeed(50);
       runLeftStepper = true;
       runRightStepper = true;
       recieveMode = false;
@@ -397,10 +411,11 @@ void doMenuSelect () {
       lcd.print("Hz");
         //I2C on address 8 - Slave
       Wire.begin(8);                // join i2c bus with address #8
-      // Wire.onRequest(requestEvent); // register event
       Wire.onReceive(receiveEvent);
-      rightStepper.setSpeed(stepSpeed);
-      leftStepper.setSpeed(stepSpeed);
+      rightStepper.setMaxSpeed(stepSpeed);
+      leftStepper.setMaxSpeed(stepSpeed);
+      rightStepper.moveTo(1000000000000);
+      leftStepper.moveTo(1000000000000);
       runLeftStepper = true;
       runRightStepper = true;
       recieveMode = false;
@@ -414,8 +429,8 @@ void doMenuSelect () {
       } else {
         stepSpeed = stepSpeed + 5;
       }
-      rightStepper.setSpeed(stepSpeed); 
-      leftStepper.setSpeed(stepSpeed);
+      rightStepper.setMaxSpeed(stepSpeed); 
+      leftStepper.setMaxSpeed(stepSpeed);
 
       lcd.setCursor(0, 1);
       lcd.print("Speed = ");
@@ -440,14 +455,14 @@ void doMenuSelect () {
       break;
     case 5:
       lcd.print("--RX POS MODE---");
-      leftStepper.setSpeed(2);
+      leftStepper.setMaxSpeed(2);
       runLeftStepper = false;
       runRightStepper = false;
       recieveMode = false;
       recievePos = true;
       setWonky = false;
-      rightStepper.setSpeed(2);
-      leftStepper.setSpeed(2);
+      rightStepper.setMaxSpeed(2);
+      leftStepper.setMaxSpeed(2);
       break;
   }
 }
@@ -455,7 +470,6 @@ void doMenuSelect () {
 float rpmToHz(long rpm) {
   return (float)(rpm * (3.33) / 60);
 }
-
 
 void clearScreen(int row) {
 
@@ -470,14 +484,39 @@ void requestEvent() {
   // for (uint8_t i = 0; i < SONAR_NUM; i++) cm[i] = 0;                                // Make distance zero in case there's no ping echo for this sensor.
 }
 
-void receiveEvent(int howMany) {
-  stepSpeed = Wire.read();
-  lcd.setCursor(8, 1);
-  lcd.print(rpmToHz(stepSpeed)); // revolutions per second
+void receiveEvent(int howMany) {   // USE HOW MANY !!!!!!!!!!!!!!
+  int count = 0;
+  bool changeSpeed = false;
+  while (0 < Wire.available()) { // loop through all but the last
+    // if(count < 2) stepSpeeds[count] = Wire.read(); // receive byte as a character
+    float speed = Wire.read();
+    if(speed == stepSpeeds[count]) changeSpeed = true;
+    stepSpeeds[count] = speed;
+    count++;
+  }
+  
+  if(count == 2 && changeSpeed == true){
+    rightStepper.setMaxSpeed(stepSpeeds[0] * (maxSpeed / 255.0));
+    leftStepper.setMaxSpeed(stepSpeeds[1] * (maxSpeed / 255.0));
+    rightStepper.moveTo(1000000000000);
+    leftStepper.moveTo(1000000000000);
+
+    lcd.setCursor(8, 1);
+    lcd.print(stepSpeeds[0] * (maxSpeed / 255.0)); // revolutions per second
+  }
+  count = 0;
+  
+  // stepSpeed = Wire.read();
   // while (1 < Wire.available()) { // loop through all but the last
   //   int x = Wire.read() * 4; // receive byte as a character
   //   Serial.print(c);         // print the character
   // }
   // int x = Wire.read();    // receive byte as an integer
-  Serial.println("I2C");         // print the integer
+
+  // if(stepSpeed.size() != 2){
+  //   stepSpeeds.clear();
+  //   stepSpeeds.push_back(0);
+  //   stepSpeeds.push_back(0);
+  //   Serial.println("Not enough data from DMX! Set stepSpeeds to 0");
+  // }
 }

@@ -279,6 +279,7 @@ void PixelDriver::show() {
 
     if(sendPeri)
         sendPeriDMX();
+    // sendPeriDMX();
 
     if (type == PixelType::WS2811) {
         uart_buffer = pixdata;
@@ -317,7 +318,7 @@ void PixelDriver::sendPeriDMX(){
     Wire.beginTransmission(8); // transmit to device #8
     for(int i = 0; i < peri_dimmer.size(); i++){
         Wire.write(peri_dimmer[i]);              // sends one byte
-        LOG_PORT.println(peri_dimmer[i]);
+        // LOG_PORT.printrintln(peri_dimmer[i]);
     }   
     // LOG_PORT.print("Sent Peri ");
     // LOG_PORT.println(peri_dimmer);
