@@ -99,6 +99,102 @@ void procE(uint8_t *data, AsyncWebSocketClient *client) {
             s_baud["250000"] = static_cast<uint32_t>(BaudRate::BR_250000);
             s_baud["460800"] = static_cast<uint32_t>(BaudRate::BR_460800);
 #endif
+            // Fallback Modes
+            JsonObject &hbf_fb_mode_1 = json.createNestedObject("hbf_fb_mode_1");
+            hbf_fb_mode_1["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_1["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_1["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_1["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_2 = json.createNestedObject("hbf_fb_mode_2");
+            hbf_fb_mode_2["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_2["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_2["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_2["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_3 = json.createNestedObject("hbf_fb_mode_3");
+            hbf_fb_mode_3["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_3["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_3["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_3["Other"] = static_cast<uint8_t>(NeopixelMode::Other);
+
+            JsonObject &hbf_fb_mode_4 = json.createNestedObject("hbf_fb_mode_4");
+            hbf_fb_mode_4["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_4["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_4["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_4["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_5 = json.createNestedObject("hbf_fb_mode_5");
+            hbf_fb_mode_5["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_5["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_5["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_5["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_6 = json.createNestedObject("hbf_fb_mode_6");
+            hbf_fb_mode_6["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_6["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_6["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_6["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_7 = json.createNestedObject("hbf_fb_mode_7");
+            hbf_fb_mode_7["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_7["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_7["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_7["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_8 = json.createNestedObject("hbf_fb_mode_8");
+            hbf_fb_mode_8["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_8["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_8["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_8["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_9 = json.createNestedObject("hbf_fb_mode_9");
+            hbf_fb_mode_9["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_9["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_9["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_9["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_10 = json.createNestedObject("hbf_fb_mode_10");
+            hbf_fb_mode_10["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_10["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_10["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_10["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_11 = json.createNestedObject("hbf_fb_mode_11");
+            hbf_fb_mode_11["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_11["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_11["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_11["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_12 = json.createNestedObject("hbf_fb_mode_12");
+            hbf_fb_mode_12["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_12["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_12["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_12["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_13 = json.createNestedObject("hbf_fb_mode_13");
+            hbf_fb_mode_13["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_13["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_13["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_13["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_14 = json.createNestedObject("hbf_fb_mode_14");
+            hbf_fb_mode_14["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_14["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_14["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_14["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_15 = json.createNestedObject("hbf_fb_mode_15");
+            hbf_fb_mode_15["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_15["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_15["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_15["Other"] = static_cast<uint8_t>(NeopixelMode::Other);   
+
+            JsonObject &hbf_fb_mode_16 = json.createNestedObject("hbf_fb_mode_16");
+            hbf_fb_mode_16["disabled"] = static_cast<uint8_t>(NeopixelMode::disabled);
+            hbf_fb_mode_16["Fire"] = static_cast<uint8_t>(NeopixelMode::Fire);
+            hbf_fb_mode_16["Sparkle"] = static_cast<uint8_t>(NeopixelMode::Sparkle);
+            hbf_fb_mode_16["Other"] = static_cast<uint8_t>(NeopixelMode::Other);                                                                                                                                                                                    
 
             String response;
             json.printTo(response);
@@ -222,6 +318,21 @@ void procT(uint8_t *data, AsyncWebSocketClient *client) {
         case '5': // NOISEMATRIX
             config.testmode = TestMode::NOISEMATRIX;
             LOG_PORT.println("TESTMODE NOISEMATRIX");
+        break;
+
+        case '6': // FIRE
+            config.testmode = TestMode::FIRE;
+            LOG_PORT.println("TESTMODE FIRE");
+        break;
+        case '7': // SPARKLE
+            config.testmode = TestMode::SPARKLE;
+            LOG_PORT.println("TESTMODE SPARKLE");                        
+        break;
+
+        case '8': // FALLBACK
+            config.testmode = TestMode::FALLBACK;
+            LOG_PORT.println("FALLBACK ANIMATIONS");                        
+        break;        
     }
 }
 

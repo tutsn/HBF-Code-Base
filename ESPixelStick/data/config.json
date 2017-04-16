@@ -1,0 +1,84 @@
+{
+  "network": {
+    "ssid": "",
+    "passphrase": "",
+    "ip": [
+      192,
+      168,
+      1,
+      11
+    ],
+    "netmask": [
+      255,
+      255,
+      255,
+      0
+    ],
+    "gateway": [
+      192,
+      168,
+      1,
+      1
+    ],
+    "dhcp": false,
+    "ap_fallback": false
+  },
+
+  "device": {
+    "id": "ESPixelStick02"
+  },
+
+  "e131": {
+    "universe": 1,
+    "channel_start": 1,
+    "channel_count": 900,
+    "multicast": false
+  },
+
+  "pixel": {
+    "type": 0,
+    "color": 0,
+    "gamma": true
+  },
+
+  "serial": {
+    "type": 0,
+    "baudrate": 57600
+  },
+  
+  "hbf": {
+    "ultrasonic": false,
+    "neopixel_mode": 0  
+  },
+  
+  "noisematrix": {
+    "xdim": 50,
+    "ydim": 6,
+    "fps": 25,
+    "spp": 10,
+    "scale": 20,
+    "speed": 1
+  },
+  
+  "fire": {
+    "fps": 150,
+    "cooling": 50,
+    "sparking": 10
+  },
+  "sparkle": {
+    "fps": 50,
+    "cooling": 15,
+    "twinkle": 120,
+    "flicker": 100,
+    "bpm": 150,
+    "hue": 0
+  },
+  "stairs": {
+    "leng": 100,
+    "triggerdist": 0,
+    "peridmx": false,
+    "periuniverse": 0,
+    "peridimmers": 0
+  }    
+  
+}

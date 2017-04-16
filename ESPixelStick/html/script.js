@@ -320,6 +320,87 @@ function getConfig(data) {
     $('#multicast').prop('checked', config.e131.multicast);
 
 		// HBF Config
+		// Fallback Mode
+		$('#hbf_fb_mode_1').val(config.fallback.fb_mode[0]);
+		$('#hbf_fb_numleds_1').val(config.fallback.fb_numleds[0]);   
+		$('#hbf_fb_offset_1').val(config.fallback.fb_offset[0]);   
+		$('#hbf_fb_reverse_1').prop('checked', config.fallback.fb_reverse[0]);
+		
+		$('#hbf_fb_mode_2').val(config.fallback.fb_mode[1]);
+		$('#hbf_fb_numleds_2').val(config.fallback.fb_numleds[1]);   
+		$('#hbf_fb_offset_2').val(config.fallback.fb_offset[1]);   
+		$('#hbf_fb_reverse_2').prop('checked', config.fallback.fb_reverse[1]);
+		
+		$('#hbf_fb_mode_3').val(config.fallback.fb_mode[2]);
+		$('#hbf_fb_numleds_3').val(config.fallback.fb_numleds[2]);   
+		$('#hbf_fb_offset_3').val(config.fallback.fb_offset[2]);   
+		$('#hbf_fb_reverse_3').prop('checked', config.fallback.fb_reverse[2]);
+		
+		$('#hbf_fb_mode_4').val(config.fallback.fb_mode[3]);
+		$('#hbf_fb_numleds_4').val(config.fallback.fb_numleds[3]);   
+		$('#hbf_fb_offset_4').val(config.fallback.fb_offset[3]);   
+		$('#hbf_fb_reverse_4').prop('checked', config.fallback.fb_reverse[3]); 						      
+
+		$('#hbf_fb_mode_5').val(config.fallback.fb_mode[4]);
+		$('#hbf_fb_numleds_5').val(config.fallback.fb_numleds[4]);   
+		$('#hbf_fb_offset_5').val(config.fallback.fb_offset[4]);   
+		$('#hbf_fb_reverse_5').prop('checked', config.fallback.fb_reverse[4]);
+    
+		$('#hbf_fb_mode_6').val(config.fallback.fb_mode[5]);
+		$('#hbf_fb_numleds_6').val(config.fallback.fb_numleds[5]);   
+		$('#hbf_fb_offset_6').val(config.fallback.fb_offset[5]);   
+		$('#hbf_fb_reverse_6').prop('checked', config.fallback.fb_reverse[5]);
+    
+		$('#hbf_fb_mode_7').val(config.fallback.fb_mode[6]);
+		$('#hbf_fb_numleds_7').val(config.fallback.fb_numleds[6]);   
+		$('#hbf_fb_offset_7').val(config.fallback.fb_offset[6]);   
+		$('#hbf_fb_reverse_7').prop('checked', config.fallback.fb_reverse[6]);
+    
+		$('#hbf_fb_mode_8').val(config.fallback.fb_mode[7]);
+		$('#hbf_fb_numleds_8').val(config.fallback.fb_numleds[7]);   
+		$('#hbf_fb_offset_8').val(config.fallback.fb_offset[7]);   
+		$('#hbf_fb_reverse_8').prop('checked', config.fallback.fb_reverse[7]);
+    
+		$('#hbf_fb_mode_9').val(config.fallback.fb_mode[8]);
+		$('#hbf_fb_numleds_9').val(config.fallback.fb_numleds[8]);   
+		$('#hbf_fb_offset_9').val(config.fallback.fb_offset[8]);   
+		$('#hbf_fb_reverse_9').prop('checked', config.fallback.fb_reverse[8]);
+    
+		$('#hbf_fb_mode_10').val(config.fallback.fb_mode[9]);
+		$('#hbf_fb_numleds_10').val(config.fallback.fb_numleds[9]);   
+		$('#hbf_fb_offset_10').val(config.fallback.fb_offset[9]);   
+		$('#hbf_fb_reverse_10').prop('checked', config.fallback.fb_reverse[9]);
+    
+		$('#hbf_fb_mode_11').val(config.fallback.fb_mode[10]);
+		$('#hbf_fb_numleds_11').val(config.fallback.fb_numleds[10]);   
+		$('#hbf_fb_offset_11').val(config.fallback.fb_offset[10]);   
+		$('#hbf_fb_reverse_11').prop('checked', config.fallback.fb_reverse[10]);
+    
+		$('#hbf_fb_mode_12').val(config.fallback.fb_mode[11]);
+		$('#hbf_fb_numleds_12').val(config.fallback.fb_numleds[11]);   
+		$('#hbf_fb_offset_12').val(config.fallback.fb_offset[11]);   
+		$('#hbf_fb_reverse_12').prop('checked', config.fallback.fb_reverse[11]);
+    
+		$('#hbf_fb_mode_13').val(config.fallback.fb_mode[12]);
+		$('#hbf_fb_numleds_13').val(config.fallback.fb_numleds[12]);   
+		$('#hbf_fb_offset_13').val(config.fallback.fb_offset[12]);   
+		$('#hbf_fb_reverse_13').prop('checked', config.fallback.fb_reverse[12]);
+    
+		$('#hbf_fb_mode_14').val(config.fallback.fb_mode[13]);
+		$('#hbf_fb_numleds_14').val(config.fallback.fb_numleds[13]);   
+		$('#hbf_fb_offset_14').val(config.fallback.fb_offset[13]);   
+		$('#hbf_fb_reverse_14').prop('checked', config.fallback.fb_reverse[13]);
+    
+		$('#hbf_fb_mode_15').val(config.fallback.fb_mode[14]);
+		$('#hbf_fb_numleds_15').val(config.fallback.fb_numleds[14]);   
+		$('#hbf_fb_offset_15').val(config.fallback.fb_offset[14]);   
+		$('#hbf_fb_reverse_15').prop('checked', config.fallback.fb_reverse[14]);
+    
+		$('#hbf_fb_mode_16').val(config.fallback.fb_mode[15]);
+		$('#hbf_fb_numleds_16').val(config.fallback.fb_numleds[15]);   
+		$('#hbf_fb_offset_16').val(config.fallback.fb_offset[15]);   
+		$('#hbf_fb_reverse_16').prop('checked', config.fallback.fb_reverse[15]);                                            				
+		
 		// fetch ultrasonic sensors
 		$('#hbf_ultrasonic').prop('checked', config.hbf.ultrasonic);
 		
@@ -327,14 +408,41 @@ function getConfig(data) {
     $('#hbf_matrix_xdim').val(config.noisematrix.xdim);    
     $('#hbf_matrix_ydim').val(config.noisematrix.ydim);    
 		$('#hbf_matrix_fps').val(config.noisematrix.fps);
-		$('#hbf_matrix_spp').val(config.noisematrix.spp);    
+		$('#hbf_matrix_spp').val(config.noisematrix.spp); 
+		$('#hbf_matrix_scale').val(config.noisematrix.scale);
+		$('#hbf_matrix_speed').val(config.noisematrix.speed); 
+    
+    // Stairs
+    $('#hbf_stairs_length').val(config.stairs.leng);    
+    $('#hbf_stairs_triggerdist').val(config.stairs.triggerdist);    
+		$('#hbf_stairs_periphal_dmx').prop('checked', config.stairs.peridmx);		
+		$('#hbf_stairs_periuniverse').val(config.stairs.periuniverse); 
+		$('#hbf_stairs_peridimmers').val(config.stairs.peridimmers);
+		
+    // Fire 
+    $('#hbf_fire_fps').val(config.fire.fps);    
+    $('#hbf_fire_cooling').val(config.fire.cooling);    
+		$('#hbf_fire_sparking').val(config.fire.sparking);
+			  
+		// Sparkle			  
+		$('#hbf_sparkle_fps').val(config.sparkle.fps);
+		$('#hbf_sparkle_cooling').val(config.sparkle.cooling);
+		$('#hbf_sparkle_twinkle').val(config.sparkle.twinkle);
+		$('#hbf_sparkle_flicker').val(config.sparkle.flicker);
+		$('#hbf_sparkle_bpm').val(config.sparkle.bpm);
+		$('#hbf_sparkle_hue').val(config.sparkle.hue);
+		
 
     // Output Config
     $('.odiv').addClass('hidden');
     if (config.device.mode === 0) {  // Pixel
         mode = 'pixel';
         $('#o_pixel').removeClass('hidden');
-				$('#o_noisematrix').removeClass('hidden');        
+				$('#o_noisematrix').removeClass('hidden');
+				$('#o_stairs').removeClass('hidden');
+				$('#o_fire').removeClass('hidden');
+				$('#o_sparkle').removeClass('hidden');      
+				$('#o_fallback').removeClass('hidden');				          
         $('#p_count').val(config.e131.channel_count / 3);
         $('#p_type').val(config.pixel.type);
         $('#p_color').val(config.pixel.color);
@@ -359,7 +467,11 @@ function getConfig(data) {
     if (config.device.mode == 1) {  // Serial
         mode = 'serial';
         $('#o_serial').removeClass('hidden');
-        $('#o_noisematrix').removeClass('hidden');  
+        $('#o_noisematrix').removeClass('hidden');
+        $('#o_stairs').removeClass('hidden');
+				$('#o_fire').removeClass('hidden');   
+				$('#o_sparkle').removeClass('hidden');
+				$('#o_fallback').removeClass('hidden');				
         $('#s_count').val(config.e131.channel_count);
         $('#s_proto').val(config.serial.type);
         $('#s_baud').val(config.serial.baudrate);
@@ -473,11 +585,39 @@ function submitConfig() {
             		'xdim': parseInt($('#hbf_matrix_xdim').val()),
             		'ydim': parseInt($('#hbf_matrix_ydim').val()),            
                 'fps': parseInt($('#hbf_matrix_fps').val()),
-                'spp': parseInt($('#hbf_matrix_spp').val())
+                'spp': parseInt($('#hbf_matrix_spp').val()),
+                'scale': parseInt($('#hbf_matrix_scale').val()),
+                'speed': parseInt($('#hbf_matrix_speed').val())
             },
+            'stairs': {
+            		'leng': parseInt($('#hbf_stairs_length').val()),
+            		'triggerdist': parseInt($('#hbf_stairs_triggerdist').val()),            
+                'peridmx': $('#hbf_stairs_periphal_dmx').prop('checked'),                
+                'periuniverse': parseInt($('#hbf_stairs_periuniverse').val()),
+                'peridimmers': parseInt($('#hbf_stairs_peridimmers').val())            
+            },
+            'fire': {
+            		'fps': parseInt($('#hbf_fire_fps').val()),
+            		'cooling': parseInt($('#hbf_fire_cooling').val()),            
+                'sparking': parseInt($('#hbf_fire_sparking').val())                
+            },            
+            'sparkle': {
+						 		'fps': parseInt($('#hbf_sparkle_fps').val()),
+						 		'cooling': parseInt($('#hbf_sparkle_cooling').val()),
+						 		'twinkle': parseInt($('#hbf_sparkle_twinkle').val()),
+						 		'flicker': parseInt($('#hbf_sparkle_flicker').val()),
+						 		'bpm': parseInt($('#hbf_sparkle_bpm').val()),
+						 		'hue': parseInt($('#hbf_sparkle_hue').val())
+						},
             'hbf': {
-            		'ultrasonic': $('#hbf_ultrasonic').prop('checked')
-            }
+            		'ultrasonic': $('#hbf_ultrasonic').prop('checked')            		
+            },
+            'fallback': {
+            		'fb_mode': [parseInt($('#hbf_fb_mode_1').val()), parseInt($('#hbf_fb_mode_2').val()), parseInt($('#hbf_fb_mode_3').val()), parseInt($('#hbf_fb_mode_4').val()), parseInt($('#hbf_fb_mode_5').val()), parseInt($('#hbf_fb_mode_6').val()), parseInt($('#hbf_fb_mode_7').val()), parseInt($('#hbf_fb_mode_8').val()), parseInt($('#hbf_fb_mode_9').val()), parseInt($('#hbf_fb_mode_10').val()), parseInt($('#hbf_fb_mode_11').val()), parseInt($('#hbf_fb_mode_12').val()), parseInt($('#hbf_fb_mode_13').val()), parseInt($('#hbf_fb_mode_14').val()), parseInt($('#hbf_fb_mode_15').val()), parseInt($('#hbf_fb_mode_16').val())],
+            		'fb_numleds': [parseInt($('#hbf_fb_numleds_1').val()), parseInt($('#hbf_fb_numleds_2').val()), parseInt($('#hbf_fb_numleds_3').val()), parseInt($('#hbf_fb_numleds_4').val()), parseInt($('#hbf_fb_numleds_5').val()), parseInt($('#hbf_fb_numleds_6').val()), parseInt($('#hbf_fb_numleds_7').val()), parseInt($('#hbf_fb_numleds_8').val()), parseInt($('#hbf_fb_numleds_9').val()), parseInt($('#hbf_fb_numleds_10').val()), parseInt($('#hbf_fb_numleds_11').val()), parseInt($('#hbf_fb_numleds_12').val()), parseInt($('#hbf_fb_numleds_13').val()), parseInt($('#hbf_fb_numleds_14').val()), parseInt($('#hbf_fb_numleds_15').val()), parseInt($('#hbf_fb_numleds_16').val())],
+            		'fb_offset': [parseInt($('#hbf_fb_offset_1').val()), parseInt($('#hbf_fb_offset_2').val()),parseInt($('#hbf_fb_offset_3').val()),parseInt($('#hbf_fb_offset_4').val()), parseInt($('#hbf_fb_offset_5').val()), parseInt($('#hbf_fb_offset_6').val()), parseInt($('#hbf_fb_offset_7').val()), parseInt($('#hbf_fb_offset_8').val()), parseInt($('#hbf_fb_offset_9').val()), parseInt($('#hbf_fb_offset_10').val()), parseInt($('#hbf_fb_offset_11').val()), parseInt($('#hbf_fb_offset_12').val()), parseInt($('#hbf_fb_offset_13').val()), parseInt($('#hbf_fb_offset_14').val()), parseInt($('#hbf_fb_offset_15').val()), parseInt($('#hbf_fb_offset_16').val())],
+            		'fb_reverse': [$('#hbf_fb_reverse_1').prop('checked'), $('#hbf_fb_reverse_2').prop('checked'), $('#hbf_fb_reverse_3').prop('checked'), $('#hbf_fb_reverse_4').prop('checked'), $('#hbf_fb_reverse_5').prop('checked'), $('#hbf_fb_reverse_6').prop('checked'), $('#hbf_fb_reverse_7').prop('checked'), $('#hbf_fb_reverse_8').prop('checked'), $('#hbf_fb_reverse_9').prop('checked'), $('#hbf_fb_reverse_10').prop('checked'), $('#hbf_fb_reverse_11').prop('checked'), $('#hbf_fb_reverse_12').prop('checked'), $('#hbf_fb_reverse_13').prop('checked'), $('#hbf_fb_reverse_14').prop('checked'), $('#hbf_fb_reverse_15').prop('checked'), $('#hbf_fb_reverse_16').prop('checked')]					
+						}
             
         };
     ws.send('S2' + JSON.stringify(json));
@@ -533,8 +673,16 @@ function test() {
     
 		else if (!tmode.localeCompare('t_noisematrix')) {
         ws.send('T5');
-    
-    }    
+		}        
+		else if (!tmode.localeCompare('t_fire')) {
+        ws.send('T6');
+		}		
+		else if (!tmode.localeCompare('t_sparkle')) {
+        ws.send('T7');				        
+    }  
+		else if (!tmode.localeCompare('t_fallback')) {
+        ws.send('T8');				        
+    } 		  
     else if (!tmode.localeCompare('t_view')) {
         ws.send('T4');
     }

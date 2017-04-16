@@ -27,7 +27,11 @@
 #endif
 
 // include additional testing animations for fallback/backup purposes
-#include "stairs_matrix.h"
+#include "bak_animations.h"
+
+#include "sparkle.h"
+#include "fire.h"
+
 
 /* Name and version */
 const char VERSION[] = "2.1-dev (20161214)";
@@ -55,6 +59,14 @@ const char VERSION[] = "2.1-dev (20161214)";
 const char CONFIG_FILE[] = "/config.json";
 #define CONFIG_MAX_SIZE 2048    /* Sanity limit for config file */
 
+/* Neopixel Modes */
+enum class NeopixelMode : uint8_t {
+    disabled,
+    Fire,
+    Sparkle,
+    Other
+};
+
 /* Pixel Types */
 enum class DevMode : uint8_t {
     MPIXEL,
@@ -67,6 +79,7 @@ enum class TestMode : uint8_t {
     NOISEMATRIX,
     FIRE,
     SPARKLE,
+    FALLBACK,
     STATIC,
     CHASE,
     RAINBOW,
@@ -77,6 +90,7 @@ typedef struct {
     uint8_t r,g,b;              //hold requested color
     uint16_t step;               //step in testing routine
     uint32_t last;              //last update
+    uint32_t last2;   
 } testing_t;
 
 /* Configuration structure */
@@ -115,13 +129,34 @@ typedef struct {
     uint16_t    peri_universe;          /* Default = 0. Peripheral universe to listen for */
     uint16_t    num_peri_dimmers;       // Default = 0. 
 
+    /* Fallback Modes */
+    NeopixelMode  neopixel_mode;
+    NeopixelMode fb_mode[16];
+    uint16_t    fb_numleds[16];
+    uint16_t    fb_offset[16];
+    bool        fb_reverse[16];
+
     /* NOISEMATRIX */
     uint16_t    matrix_xdim;
     uint16_t    matrix_ydim;
     uint16_t    matrix_fps;
     uint16_t    matrix_spp;
-     
+    uint16_t    matrix_scale;
+    uint16_t    matrix_speed;   
 
+    /* Fire */
+    uint16_t    fire_fps;
+    uint16_t    fire_cooling;
+    uint16_t    fire_sparking; 
+
+    /*Sparkle */
+    uint16_t    sparkle_fps;
+    uint16_t    sparkle_cooling;
+    uint16_t    sparkle_twinkle;
+    uint16_t    sparkle_flicker;
+    uint16_t    sparkle_bpm;
+    uint16_t    sparkle_hue;
+    
 #if defined(ESPS_MODE_PIXEL)
     /* Pixels */
     PixelType   pixel_type;     /* Pixel type */
@@ -145,6 +180,13 @@ bool            reboot = false; /* Reboot flag */
 AsyncWebServer  web(HTTP_PORT); /* Web Server */
 AsyncWebSocket  ws("/ws");      /* Web Socket Plugin */
 
+
+// Background Animation Objects in Vectoren
+std::vector<Fire> AnimationFire;
+std::vector<Sparkle> AnimationSparkle;
+// add another one here
+
+
 /* Output Drivers */
 #if defined(ESPS_MODE_PIXEL)
 #include "PixelDriver.h"
@@ -155,6 +197,11 @@ SerialDriver    serial;         /* Serial object */
 #else
 #error "No valid output mode defined."
 #endif
+
+/* Instanzen der Backupanimationen über alle leds erzeugen */
+Fire backup_fire;
+Sparkle backup_sparkle;
+
 
 /* Forward Declarations */
 void serializeConfig(String &jsonString, bool pretty = false, bool creds = false);
